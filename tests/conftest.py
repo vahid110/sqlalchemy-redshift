@@ -4,6 +4,7 @@ import contextlib
 import itertools
 import uuid
 import functools
+import configparser
 from logging import getLogger
 
 from rs_sqla_test_utils.db import EngineDefinition
@@ -25,38 +26,41 @@ def connection_kwargs(redshift_dialect_flavor):
     """ Connection parameters for running integration tests
     against an existing Redshift instance.
 
-    The tests are currently designed to work with the Travis CI
-    environment, where a Redshift instance is available
-    in the cloud. Travis CI passes the PGPASSWORD environment
-    variable and an API call to a Heroku app gets the rest
-    of the credentials.
-
-    This fixture allows the developer to pass in their own credentials
-    for other Redshift instances by setting the following environment
-    variables:
-
-        - REDSHIFT_HOST
-        - REDSHIFT_PORT
-        - REDSHIFT_USERNAME
-        - REDSHIFT_DATABASE
-        - PGPASSWORD
-
-    If these conditions are met, the tests will be ran
-    against a real Redshift instance. Otherwise, they
-    will be ran against a mock engine.
-
-    See the fixture, _redshift_database_tool, for usage.
+    Supports both environment variables and config.ini file.
+    Priority: environment variables > config.ini > skip test
     """
-    pgpassword = os.environ.get("PGPASSWORD", None)
-    if not pgpassword:
-        pytest.skip("This test will only work on Travis.")
+    # Try environment variables first
+    pgpassword = os.environ.get("PGPASSWORD")
+    host = os.getenv("REDSHIFT_HOST")
+    port = os.getenv("REDSHIFT_PORT")
+    username = os.getenv("REDSHIFT_USERNAME")
+    database = os.getenv("REDSHIFT_DATABASE")
+    
+    # If no env vars, try config.ini
+    if not all([pgpassword, host, username]):
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
+        if os.path.exists(config_path):
+            config = configparser.ConfigParser()
+            config.read(config_path)
+            
+            if 'database-config' in config:
+                db_config = config['database-config']
+                host = host or db_config.get('host')
+                port = port or db_config.get('port')
+                username = username or db_config.get('user')
+                pgpassword = pgpassword or db_config.get('password')
+                database = database or db_config.get('database')
+    
+    # Skip if still missing required params
+    if not all([pgpassword, host, username]):
+        pytest.skip("No database credentials found. Set environment variables or create config.ini")
 
     return {
-        "host": os.getenv("REDSHIFT_HOST", None),
-        "port": os.getenv("REDSHIFT_PORT", None),
-        "username": os.getenv("REDSHIFT_USERNAME", "travis"),
+        "host": host,
+        "port": port,
+        "username": username,
         "password": pgpassword,
-        "database": os.getenv("REDSHIFT_DATABASE", "dev"),
+        "database": database or "dev",
         "dialect": redshift_dialect_flavor,
     }
 
@@ -264,6 +268,8 @@ def pytest_generate_tests(metafunc):
             dbdrivers = metafunc.config.getoption(
                 "--dbdriver", default=DriverParameterizedTests.DEFAULT_DRIVERS
             )
+            if dbdrivers is None:
+                dbdrivers = DriverParameterizedTests.DEFAULT_DRIVERS
             DriverParameterizedTests.set_drivers(dbdrivers)
 
         metafunc.parametrize(

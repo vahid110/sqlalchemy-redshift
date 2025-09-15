@@ -2,7 +2,35 @@
 
 This document explains how to configure a real Redshift connection for integration tests.
 
-## Environment Variables
+## Configuration Options
+
+You can configure Redshift connection details using either:
+1. **config.ini file** (recommended for local development)
+2. **Environment variables** (recommended for CI/CD)
+
+### Option 1: config.ini File
+
+Create a `config.ini` file in the repository root:
+
+```ini
+[database-config]
+host=your-cluster.region.redshift.amazonaws.com
+port=5439
+database=dev
+user=testuser
+password=your_password
+
+[iam-config]
+# Optional: For IAM authentication testing
+iam_role_arn=arn:aws:iam::123456789012:role/RedshiftRole
+aws_access_key_id=AKIAIOSFODNN7EXAMPLE
+aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+region=us-east-1
+```
+
+**Note**: `config.ini` is already in `.gitignore` to prevent accidental commits.
+
+### Option 2: Environment Variables
 
 Set the following environment variables to enable integration tests with a real Redshift cluster:
 
@@ -48,6 +76,7 @@ export AWS_DEFAULT_REGION="us-east-1"
 
 Once environment variables are set, run the integration tests:
 
+### Using pytest directly:
 ```bash
 # Run all tests (including integration tests)
 python -m pytest tests/ -v
@@ -58,6 +87,18 @@ python -m pytest tests/ -v -k "reflection_inspection"
 # Run specific integration test files
 python -m pytest tests/test_dialect_types.py -v
 ```
+
+### Using tox (recommended):
+```bash
+# Run tests with tox (automatically handles environment variables)
+tox -e py310-pg28-sa14
+
+# Run with specific Python/SQLAlchemy versions
+tox -e py39-pg28-sa13   # Python 3.9, SQLAlchemy 1.3
+tox -e py310-pg28-sa14  # Python 3.10, SQLAlchemy 1.4
+```
+
+**Note**: The `tox.ini` file is already configured to pass through the required environment variables (`PGPASSWORD`, `REDSHIFT_HOST`, etc.)
 
 ## Test Database Requirements
 
@@ -82,11 +123,12 @@ Your Redshift user needs:
 
 ## Security Notes
 
-- Never commit credentials to version control
+- **config.ini is in .gitignore** - never commit credentials to version control
 - Use IAM roles when possible instead of access keys
 - Consider using AWS Secrets Manager for credential management
 - Rotate credentials regularly
 - Use least-privilege access for test users
+- **Priority**: Environment variables override config.ini settings
 
 ## Troubleshooting
 
