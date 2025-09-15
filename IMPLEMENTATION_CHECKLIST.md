@@ -3,37 +3,37 @@
 ## Phase 1: Foundation (Weeks 1-2)
 
 ### Week 1: Core Architecture
-- [ ] **Capability Flags Enhancement**
-  - [ ] Add `insert_returning = False`
-  - [ ] Add `use_insertmanyvalues = False`
-  - [ ] Add `supports_sane_rowcount = False`
-  - [ ] Add `supports_statement_cache = True`
+- [x] **Capability Flags Enhancement**
+  - [x] Add `insert_returning = False`
+  - [x] Add `use_insertmanyvalues = False`
+  - [x] Add `supports_sane_rowcount = False`
+  - [x] Add `supports_statement_cache = True`
   - [ ] Verify existing boolean/decimal/uuid flags
   - [ ] Test capability flags with SQLAlchemy 1.4 & 2.0
 
-- [ ] **Authentication System Migration**
-  - [ ] Create `sqlalchemy_redshift/auth.py`
-  - [ ] Migrate `create_profile_engine()` helper
-  - [ ] Migrate `create_serverless_engine()` helper
-  - [ ] Migrate `create_saml_engine()` helper
-  - [ ] Migrate `create_azure_engine()` helper
-  - [ ] Implement comprehensive URL parameter parsing
-  - [ ] Add credential redaction in logs
+- [x] **Authentication System Migration**
+  - [x] Create `sqlalchemy_redshift/auth.py`
+  - [x] Migrate `create_profile_engine()` helper
+  - [x] Migrate `create_serverless_engine()` helper
+  - [x] Migrate `create_saml_engine()` helper
+  - [x] Migrate `create_azure_engine()` helper
+  - [x] Implement comprehensive URL parameter parsing
+  - [x] Add credential redaction in logs
   - [ ] Test all 9 authentication methods
 
-- [ ] **Error Handling & Resilience**
-  - [ ] Create `sqlalchemy_redshift/resilience.py`
-  - [ ] Migrate `ProductionErrorHandler` class
-  - [ ] Migrate `CircuitBreaker` implementation
-  - [ ] Add retry logic with exponential backoff
-  - [ ] Enhance `is_disconnect()` method
-  - [ ] Improve `do_rollback()` with cache clearing
+- [x] **Error Handling & Resilience**
+  - [x] Create `sqlalchemy_redshift/resilience.py`
+  - [x] Migrate `ProductionErrorHandler` class
+  - [x] Migrate `CircuitBreaker` implementation
+  - [x] Add retry logic with exponential backoff
+  - [x] Enhance `is_disconnect()` method
+  - [x] Improve `do_rollback()` with cache clearing
   - [ ] Add connection health monitoring
 
 ### Week 2: Type System & Reflection
-- [ ] **Enhanced Type Support**
-  - [ ] Add `ABSTIME` type to ischema_names
-  - [ ] Add `INTERVAL` type to ischema_names
+- [x] **Enhanced Type Support**
+  - [x] Add `ABSTIME` type to ischema_names
+  - [x] Add `INTERVAL` type to ischema_names
   - [ ] Enhance `SUPER` type with caching
   - [ ] Add `JSON` type with error handling
   - [ ] Improve `RedshiftArray` performance

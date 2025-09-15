@@ -29,6 +29,8 @@ from .commands import (AlterTableAppendCommand, Compression, CopyCommand,
                        RefreshMaterializedView, UnloadFromSelect)
 from .ddl import (CreateMaterializedView, DropMaterializedView,
                   get_table_attributes)
+from .auth import parse_auth_params, redact_credentials
+from .resilience import ProductionErrorHandler, CircuitBreaker
 
 sa_version = Version(sa.__version__)
 logger = getLogger(__name__)
@@ -69,6 +71,8 @@ __all__ = (
     'TIMESTAMPTZ',
     'TIMETZ',
     'HLLSKETCH',
+    'ABSTIME',
+    'INTERVAL',
 
     'RedshiftDialect', 'RedshiftDialect_psycopg2',
     'RedshiftDialect_psycopg2cffi', 'RedshiftDialect_redshift_connector',
@@ -410,6 +414,26 @@ class HLLSKETCH(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
         return dbapi.HLLSKETCH
 
 
+class ABSTIME(RedshiftTypeEngine, sa.dialects.postgresql.TIMESTAMP):
+    """
+    Redshift ABSTIME data type for absolute time
+    """
+    __visit_name__ = 'ABSTIME'
+
+    def __init__(self):
+        super(ABSTIME, self).__init__()
+
+
+class INTERVAL(RedshiftTypeEngine, sa.dialects.postgresql.INTERVAL):
+    """
+    Redshift INTERVAL data type
+    """
+    __visit_name__ = 'INTERVAL'
+
+    def __init__(self):
+        super(INTERVAL, self).__init__()
+
+
 # Mapping for database schema inspection of Amazon Redshift datatypes
 REDSHIFT_ISCHEMA_NAMES = {
     "geometry": GEOMETRY,
@@ -417,6 +441,10 @@ REDSHIFT_ISCHEMA_NAMES = {
     "time with time zone": TIMETZ,
     "timestamp with time zone": TIMESTAMPTZ,
     "hllsketch": HLLSKETCH,
+    "abstime": ABSTIME,
+    "interval": INTERVAL,
+    "intervaly2m": INTERVAL,
+    "intervald2s": INTERVAL,
 }
 
 
@@ -649,6 +677,12 @@ class RedshiftTypeCompiler(PGTypeCompiler):
 
     def visit_HLLSKETCH(self, type_, **kw):
         return "HLLSKETCH"
+    
+    def visit_ABSTIME(self, type_, **kw):
+        return "ABSTIME"
+    
+    def visit_INTERVAL(self, type_, **kw):
+        return "INTERVAL"
 
 
 class RedshiftIdentifierPreparer(PGIdentifierPreparer):
@@ -1252,6 +1286,11 @@ class RedshiftDialect_psycopg2cffi(
 
 
 class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
+    # SQLAlchemy 2.0 compatibility flags - critical for Redshift
+    insert_returning = False              # Redshift doesn't support RETURNING
+    use_insertmanyvalues = False         # Avoid SA 2.0 optimization issues
+    supports_sane_rowcount = False       # Redshift rowcount quirks
+    supports_statement_cache = True      # Enable for performance
 
     class RedshiftCompiler_redshift_connector(RedshiftCompiler, PGCompiler):
         def limit_clause(self, select, **kw):
@@ -1307,6 +1346,9 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             RedshiftDialect_redshift_connector, self
         ).__init__(client_encoding=client_encoding, **kwargs)
         self.client_encoding = client_encoding
+        # Initialize production-grade error handling
+        self.error_handler = ProductionErrorHandler()
+        self.circuit_breaker = CircuitBreaker()
 
     @classmethod
     def dbapi(cls):
@@ -1400,7 +1442,7 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 
     def create_connect_args(self, *args, **kwargs):
         """
-        Build DB-API compatible connection arguments.
+        Build DB-API compatible connection arguments with enhanced authentication.
 
         Overrides interface
         :meth:`~sqlalchemy.engine.interfaces.Dialect.create_connect_args`.
@@ -1413,6 +1455,16 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         cargs, cparams = super(RedshiftDialectMixin, self).create_connect_args(
             *args, **kwargs
         )
+        
+        # Enhanced authentication parameter parsing
+        if args and hasattr(args[0], 'query'):
+            auth_params = parse_auth_params(args[0])
+            cparams.update(auth_params)
+            
+            # Log connection attempt with redacted credentials
+            safe_url = redact_credentials(str(args[0]))
+            logger.info(f"Connecting to Redshift: {safe_url}")
+        
         # set client_encoding so it is picked up by on_connect(), as
         # redshift_connector does not have client_encoding connection parameter
         self.client_encoding = cparams.pop(
@@ -1428,6 +1480,32 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 
         default_args.update(cparams)
         return cargs, default_args
+    
+    def is_disconnect(self, e, connection, cursor):
+        """Enhanced disconnect detection using error handler"""
+        return self.error_handler.is_disconnect_error(e)
+    
+    def do_rollback(self, dbapi_connection):
+        """Handle rollback with proper error handling and cache clearing"""
+        try:
+            dbapi_connection.rollback()
+        except Exception as e:
+            # Clear prepared statement cache on rollback errors
+            if hasattr(dbapi_connection, '_caches'):
+                try:
+                    dbapi_connection._caches.clear()
+                except:
+                    pass
+            if not self.is_disconnect(e, dbapi_connection, None):
+                raise
+    
+    def do_commit(self, dbapi_connection):
+        """Handle commit with proper error handling"""
+        try:
+            dbapi_connection.commit()
+        except Exception as e:
+            if not self.is_disconnect(e, dbapi_connection, None):
+                raise
 
 
 def gen_columns_from_children(root):
