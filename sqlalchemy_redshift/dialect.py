@@ -1421,7 +1421,7 @@ class RedshiftDialect_psycopg2cffi(
 class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     # SQLAlchemy 2.0 compatibility flags - critical for Redshift
     insert_returning = False              # Redshift doesn't support RETURNING
-    use_insertmanyvalues = False         # Avoid SA 2.0 optimization issues
+    use_insertmanyvalues = True          # Enable SA 2.0 bulk insert optimization
     supports_sane_rowcount = False       # Redshift rowcount quirks
     supports_statement_cache = True      # Enable for performance
 

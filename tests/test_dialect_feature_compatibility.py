@@ -38,7 +38,7 @@ class TestSQLAlchemyVersionCompatibility:
         
         # Redshift-specific capabilities
         assert dialect.insert_returning is False  # Redshift doesn't support RETURNING
-        assert dialect.use_insertmanyvalues is False  # Avoid SA optimization issues
+        assert dialect.use_insertmanyvalues is True   # Enable SA 2.0 bulk insert optimization
         assert dialect.supports_sane_rowcount is False  # Redshift rowcount quirks
 
     def test_reflection_interface_compatibility(self):
