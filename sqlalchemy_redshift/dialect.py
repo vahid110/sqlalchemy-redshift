@@ -1471,7 +1471,7 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     statement_compiler = RedshiftCompiler_redshift_connector
     execution_ctx_cls = RedshiftExecutionContext_redshift_connector
 
-    supports_statement_cache = False
+    supports_statement_cache = True   # Enable for performance
     use_setinputsizes = False  # not implemented in redshift_connector
 
     def __init__(self, client_encoding=None, **kwargs):
