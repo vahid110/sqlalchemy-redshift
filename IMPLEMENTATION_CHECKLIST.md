@@ -49,22 +49,22 @@
 ## Phase 2: Feature Migration (Weeks 3-4)
 
 ### Week 3: Command Integration
-- [ ] **COPY/UNLOAD Commands**
-  - [ ] Preserve existing `CopyCommand` functionality
-  - [ ] Preserve existing `UnloadFromSelect` functionality
-  - [ ] Enhance with improved credential handling
-  - [ ] Add streaming support for large operations
-  - [ ] Document autocommit requirements
-  - [ ] Test command compilation and execution
+- [x] **COPY/UNLOAD Commands**
+  - [x] Preserve existing `CopyCommand` functionality
+  - [x] Preserve existing `UnloadFromSelect` functionality
+  - [x] Enhance with improved credential handling
+  - [x] Add streaming support for large operations
+  - [x] Document autocommit requirements
+  - [x] Test command compilation and execution
 
-- [ ] **DDL Extensions**
-  - [ ] Maintain `DISTSTYLE` support in DDL compiler
-  - [ ] Maintain `DISTKEY` support in DDL compiler
-  - [ ] Maintain `SORTKEY` support in DDL compiler
-  - [ ] Add `IDENTITY` column handling
-  - [ ] Enhance materialized view support
-  - [ ] Implement table option reflection
-  - [ ] Test DDL compilation accuracy
+- [x] **DDL Extensions**
+  - [x] Maintain `DISTSTYLE` support in DDL compiler
+  - [x] Maintain `DISTKEY` support in DDL compiler
+  - [x] Maintain `SORTKEY` support in DDL compiler
+  - [x] Add `IDENTITY` column handling
+  - [x] Enhance materialized view support
+  - [x] Implement table option reflection
+  - [x] Test DDL compilation accuracy
 
 ### Week 4: Performance & Streaming
 - [ ] **Connection Management**
