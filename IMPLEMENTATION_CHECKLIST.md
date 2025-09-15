@@ -28,22 +28,22 @@
   - [x] Add retry logic with exponential backoff
   - [x] Enhance `is_disconnect()` method
   - [x] Improve `do_rollback()` with cache clearing
-  - [ ] Add connection health monitoring
+  - [x] Add connection health monitoring
 
 ### Week 2: Type System & Reflection
 - [x] **Enhanced Type Support**
   - [x] Add `ABSTIME` type to ischema_names
   - [x] Add `INTERVAL` type to ischema_names
-  - [ ] Enhance `SUPER` type with caching
-  - [ ] Add `JSON` type with error handling
-  - [ ] Improve `RedshiftArray` performance
+  - [x] Enhance `SUPER` type with caching
+  - [x] Add `JSON` type with error handling
+  - [x] Improve `RedshiftArray` performance
   - [ ] Test type round-trips
 
-- [ ] **Inspector-First Reflection**
-  - [ ] Modernize reflection to use Inspector pattern
-  - [ ] Optimize bulk reflection queries (`get_multi_columns`)
-  - [ ] Add Redshift-specific metadata support
-  - [ ] Implement reflection caching
+- [x] **Inspector-First Reflection**
+  - [x] Modernize reflection to use Inspector pattern
+  - [x] Optimize bulk reflection queries (`get_multi_columns`)
+  - [x] Add Redshift-specific metadata support
+  - [x] Implement reflection caching
   - [ ] Test reflection accuracy vs original
 
 ## Phase 2: Feature Migration (Weeks 3-4)

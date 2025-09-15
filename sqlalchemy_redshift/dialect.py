@@ -73,6 +73,8 @@ __all__ = (
     'HLLSKETCH',
     'ABSTIME',
     'INTERVAL',
+    'JSON',
+    'RedshiftArray',
 
     'RedshiftDialect', 'RedshiftDialect_psycopg2',
     'RedshiftDialect_psycopg2cffi', 'RedshiftDialect_redshift_connector',
@@ -382,6 +384,7 @@ class SUPER(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
 
     def __init__(self):
         super(SUPER, self).__init__()
+        self._cache = {}  # Cache for common JSON values
 
     def get_dbapi_type(self, dbapi):
         return dbapi.SUPER
@@ -390,9 +393,40 @@ class SUPER(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
         return sa.func.json_parse(bindvalue)
 
     def process_bind_param(self, value, dialect):
-        if not isinstance(value, str):
-            return json.dumps(value)
-        return value
+        if value is None:
+            return None
+        if isinstance(value, str):
+            return value
+        
+        # Use cache for small, common values
+        value_str = str(value)
+        if len(value_str) < 100:
+            if value_str not in self._cache:
+                self._cache[value_str] = json.dumps(value)
+            return self._cache[value_str]
+        
+        return json.dumps(value)
+    
+    def result_processor(self, dialect, coltype):
+        """Process database values with caching and error handling"""
+        def process(value):
+            if value is None:
+                return None
+            if not isinstance(value, str):
+                return value
+            
+            try:
+                # Use cache for small JSON strings
+                if len(value) < 100:
+                    if value not in self._cache:
+                        self._cache[value] = json.loads(value)
+                    return self._cache[value]
+                return json.loads(value)
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning(f"Failed to parse SUPER value as JSON: {e}")
+                return value  # Return as string if JSON parsing fails
+        
+        return process
 
 
 class HLLSKETCH(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
@@ -434,6 +468,101 @@ class INTERVAL(RedshiftTypeEngine, sa.dialects.postgresql.INTERVAL):
         super(INTERVAL, self).__init__()
 
 
+class JSON(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
+    """
+    JSON type that maps to SUPER in Redshift with enhanced error handling
+    """
+    __visit_name__ = 'JSON'
+    
+    def __init__(self):
+        super(JSON, self).__init__()
+        self._cache = {}
+    
+    def bind_processor(self, dialect):
+        """Convert Python dict/list to JSON string with caching"""
+        def process(value):
+            if value is None:
+                return None
+            
+            # Use cache for small, common values
+            if isinstance(value, (dict, list)) and len(str(value)) < 100:
+                cache_key = str(value)
+                if cache_key not in self._cache:
+                    self._cache[cache_key] = json.dumps(value)
+                return self._cache[cache_key]
+            
+            return json.dumps(value)
+        
+        return process
+    
+    def result_processor(self, dialect, coltype):
+        """Convert JSON string to Python dict/list with caching and error handling"""
+        def process(value):
+            if value is None:
+                return None
+            if isinstance(value, str):
+                try:
+                    # Use cache for small JSON strings
+                    if len(value) < 100:
+                        if value not in self._cache:
+                            self._cache[value] = json.loads(value)
+                        return self._cache[value]
+                    return json.loads(value)
+                except (json.JSONDecodeError, TypeError) as e:
+                    logger.warning(f"Failed to parse JSON value: {e}")
+                    return value
+            return value
+        
+        return process
+
+
+class RedshiftArray(sa.types.ARRAY):
+    """
+    Redshift array type implementation with performance optimizations
+    """
+    
+    def __init__(self, item_type, as_tuple=False, dimensions=None, zero_indexes=False):
+        super(RedshiftArray, self).__init__(item_type, as_tuple, dimensions, zero_indexes)
+    
+    def bind_processor(self, dialect):
+        """Process Python values for database binding with optimization"""
+        item_proc = self.item_type.dialect_impl(dialect).bind_processor(dialect)
+        
+        def process(value):
+            if value is None:
+                return None
+            if not isinstance(value, (list, tuple)):
+                return value
+            
+            # Optimize for common case of no item processor
+            if not item_proc:
+                return list(value)
+            
+            # Use list comprehension for better performance
+            return [item_proc(item) for item in value]
+        
+        return process
+    
+    def result_processor(self, dialect, coltype):
+        """Process database values for Python use with optimization"""
+        item_proc = self.item_type.dialect_impl(dialect).result_processor(dialect, coltype)
+        
+        def process(value):
+            if value is None:
+                return None
+            if not isinstance(value, (list, tuple)):
+                return value
+            
+            # Optimize for common case of no item processor
+            if not item_proc:
+                return list(value)
+            
+            # Use list comprehension for better performance
+            return [item_proc(item) for item in value]
+        
+        return process
+
+
 # Mapping for database schema inspection of Amazon Redshift datatypes
 REDSHIFT_ISCHEMA_NAMES = {
     "geometry": GEOMETRY,
@@ -445,6 +574,7 @@ REDSHIFT_ISCHEMA_NAMES = {
     "interval": INTERVAL,
     "intervaly2m": INTERVAL,
     "intervald2s": INTERVAL,
+    "json": JSON,
 }
 
 
@@ -683,6 +813,9 @@ class RedshiftTypeCompiler(PGTypeCompiler):
     
     def visit_INTERVAL(self, type_, **kw):
         return "INTERVAL"
+    
+    def visit_JSON(self, type_, **kw):
+        return "SUPER"  # JSON maps to SUPER in Redshift
 
 
 class RedshiftIdentifierPreparer(PGIdentifierPreparer):
@@ -1415,6 +1548,23 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             conn.py_types[quoted_name] = conn.py_types[util.text_type]
 
         fns.append(on_connect)
+        
+        # Add Redshift-specific connection parameters
+        def configure_redshift(conn):
+            cursor = conn.cursor()
+            try:
+                # Enable query result caching
+                cursor.execute("SET enable_result_cache_for_session = on")
+                # Set query group for monitoring
+                cursor.execute("SET query_group = 'sqlalchemy'")
+                # Optimize for analytical workloads
+                cursor.execute("SET statement_timeout = 0")
+            except Exception as e:
+                logger.warning(f"Failed to set Redshift parameters: {e}")
+            finally:
+                cursor.close()
+        
+        fns.append(configure_redshift)
 
         if self.client_encoding is not None:
 
@@ -1506,6 +1656,30 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         except Exception as e:
             if not self.is_disconnect(e, dbapi_connection, None):
                 raise
+    
+    def do_ping(self, dbapi_connection):
+        """Connection health check for pool management"""
+        try:
+            cursor = dbapi_connection.cursor()
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+            cursor.close()
+            return True
+        except Exception:
+            return False
+    
+    def get_pool_class(self, url):
+        """Return optimized pool class for Redshift"""
+        from sqlalchemy.pool import QueuePool
+        return QueuePool
+    
+    def get_default_pool_size(self):
+        """Return default pool size optimized for Redshift"""
+        return 5
+    
+    def get_default_max_overflow(self):
+        """Return default max overflow optimized for Redshift"""
+        return 10
 
 
 def gen_columns_from_children(root):
