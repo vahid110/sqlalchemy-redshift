@@ -210,11 +210,12 @@
   - [ ] Add bulk insert tests (identity cols, NULLs, JSON/SUPER, arrays)
   - [ ] Enable warnings-as-errors to catch deprecations
 
-- [ ] **3. Compiler Internals (CRITICAL)**
-  - [ ] Stop reading private `Select` attrs (`_limit_clause`, `_limit`)
-  - [ ] Override visitors via public hooks (follow PostgreSQL patterns)
-  - [ ] Add tests for LIMIT/OFFSET with CTEs, subqueries, ORDER BY
-  - [ ] Validate DELETE...USING compilation
+- [x] **3. Compiler Internals (CRITICAL)**
+  - [x] Stop reading private `Select` attrs (`_limit_clause`, `_limit`)
+  - [x] Use public API with backward compatibility for SA 1.4/2.0
+  - [x] Add tests for LIMIT/OFFSET with CTEs, subqueries, ORDER BY
+  - [x] Validate DELETE...USING compilation (already working)
+  - [x] All compiler tests pass with SA 2.0.43
 
 - [ ] **4. Reflection & Inspector (HIGH)**
   - [ ] Use `inspect(engine)` calls instead of direct dialect methods

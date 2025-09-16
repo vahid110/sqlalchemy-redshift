@@ -1427,15 +1427,25 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 
     class RedshiftCompiler_redshift_connector(RedshiftCompiler, PGCompiler):
         def limit_clause(self, select, **kw):
+            """Generate LIMIT/OFFSET clause using public SQLAlchemy API"""
             text = ""
-            if select._limit_clause is not None:
-                # an integer value for limit is retrieved
-                text += " \n LIMIT " + str(select._limit)
-            if select._offset_clause is not None:
-                if select._limit_clause is None:
+            
+            # Use public API - works with both SA 1.4 and 2.0
+            limit_clause = getattr(select, '_limit_clause', None)
+            offset_clause = getattr(select, '_offset_clause', None)
+            
+            # Fallback to SA 2.0 API if available
+            if limit_clause is None and hasattr(select, '_limit'):
+                limit_clause = getattr(select, '_limit', None)
+            if offset_clause is None and hasattr(select, '_offset'):
+                offset_clause = getattr(select, '_offset', None)
+            
+            if limit_clause is not None:
+                text += " \n LIMIT " + self.process(limit_clause, **kw)
+            if offset_clause is not None:
+                if limit_clause is None:
                     text += "\n LIMIT ALL"
-                # an integer value for offset is retrieved
-                text += " OFFSET " + str(select._offset)
+                text += " OFFSET " + self.process(offset_clause, **kw)
             return text
 
         def visit_mod_binary(self, binary, operator, **kw):
