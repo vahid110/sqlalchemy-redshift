@@ -202,10 +202,11 @@
   - [x] Test installation with SA 2.0.x
   - [ ] Document URL forms for psycopg2/redshift-connector extras
 
-- [ ] **2. Test Modernization (CRITICAL)**
-  - [ ] Replace `select([col])` → `select(col)` throughout tests
-  - [ ] Remove `engine.execute` → use `conn.execute`
-  - [ ] Update to new `Result`/`Row` API patterns
+- [x] **2. Test Modernization (CRITICAL)**
+  - [x] Replace `select([col])` → `select(col)` throughout tests
+  - [x] Remove `engine.execute` → use `conn.execute` (already using modern patterns)
+  - [x] Update to new `Result`/`Row` API patterns (backward compatible syntax)
+  - [x] Verify tests pass with SQLAlchemy 2.0.43
   - [ ] Add bulk insert tests (identity cols, NULLs, JSON/SUPER, arrays)
   - [ ] Enable warnings-as-errors to catch deprecations
 

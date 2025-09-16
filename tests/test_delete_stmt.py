@@ -175,7 +175,7 @@ def test_delete_stmt_subqueryplusjoin(stub_redshift_dialect):
     ).where(
         orders.c.customer_id.in_(
             sa.select(
-                [customers.c.id]
+                customers.c.id
             ).where(customers.c.email.endswith('test.com'))
         )
     ).where(
@@ -202,7 +202,7 @@ def test_delete_stmt_subquery(stub_redshift_dialect):
     ).where(
         orders.c.customer_id.in_(
             sa.select(
-                [customers.c.id]
+                customers.c.id
             ).where(customers.c.email.endswith('test.com'))
         )
     )
@@ -222,7 +222,7 @@ def test_delete_stmt_on_subquerycomma(stub_redshift_dialect):
     ).where(
         ham.c.id.in_(
             sa.select(
-                [hammy_spam.c.ham_id]
+                hammy_spam.c.ham_id
             )
         )
     )
@@ -266,7 +266,7 @@ def test_delete_stmt_with_comma_subquery_alias_join(stub_redshift_dialect):
         items.c.order_id == orders.c.id
     ).where(
         orders.c.customer_id.in_(
-            sa.select([customers.c.id]).where(
+            sa.select(customers.c.id).where(
                 customers.c.email.endswith('test.com')
             )
         )
