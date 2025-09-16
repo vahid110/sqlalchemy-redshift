@@ -6,6 +6,11 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import operators
 from sqlalchemy.dialects import postgresql
+from sqlalchemy_redshift.dialect import (
+    RedshiftDialect_psycopg2,
+    RedshiftDialect_psycopg2cffi, 
+    RedshiftDialect_redshift_connector
+)
 
 
 def test_func_now(stub_redshift_dialect):
@@ -304,3 +309,133 @@ def test_redshift_specific_syntax(stub_redshift_dialect):
     s = select(func.HLL_CREATE_SKETCH(literal_column("col")))
     compiled = s.compile(dialect=dialect)
     assert "HLL_CREATE_SKETCH" in str(compiled)
+
+
+@pytest.mark.parametrize("dialect_cls", [
+    RedshiftDialect_psycopg2, 
+    RedshiftDialect_psycopg2cffi,
+    RedshiftDialect_redshift_connector
+])
+class TestCompilerDriverParity:
+    """Test compiler behavior is consistent across all drivers"""
+    
+    def test_offset_only_limit_all_all_drivers(self, dialect_cls):
+        """Test OFFSET-only queries emit LIMIT ALL for ALL drivers"""
+        dialect = dialect_cls()
+        
+        stmt = select(literal_column("col")).offset(10)
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "LIMIT ALL" in sql, f"LIMIT ALL missing for {dialect_cls.__name__}"
+        assert "OFFSET" in sql, f"OFFSET missing for {dialect_cls.__name__}"
+    
+    def test_limit_with_offset_all_drivers(self, dialect_cls):
+        """Test LIMIT+OFFSET queries work correctly for all drivers"""
+        dialect = dialect_cls()
+        
+        stmt = select(literal_column("col")).limit(5).offset(10)
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "LIMIT" in sql, f"LIMIT missing for {dialect_cls.__name__}"
+        assert "OFFSET" in sql, f"OFFSET missing for {dialect_cls.__name__}"
+        assert "LIMIT ALL" not in sql, f"Unexpected LIMIT ALL for {dialect_cls.__name__}"
+    
+    def test_basic_select_compilation(self, dialect_cls):
+        """Test basic SELECT compilation across drivers"""
+        dialect = dialect_cls()
+        meta = MetaData()
+        table = Table("test", meta, 
+            Column("id", Integer),
+            Column("name", String(50))
+        )
+        
+        stmt = select(table.c.id, table.c.name).where(table.c.id > 10)
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "SELECT" in sql
+        assert "test.id" in sql or "test.name" in sql
+        assert "WHERE" in sql
+    
+    def test_join_compilation(self, dialect_cls):
+        """Test JOIN compilation across drivers"""
+        dialect = dialect_cls()
+        meta = MetaData()
+        table1 = Table("table1", meta, Column("id", Integer))
+        table2 = Table("table2", meta, Column("id", Integer), Column("table1_id", Integer))
+        
+        stmt = select(table1.c.id, table2.c.id).select_from(
+            table1.join(table2, table1.c.id == table2.c.table1_id)
+        )
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "JOIN" in sql
+        assert "table1" in sql
+        assert "table2" in sql
+    
+    def test_subquery_compilation(self, dialect_cls):
+        """Test subquery compilation across drivers"""
+        dialect = dialect_cls()
+        meta = MetaData()
+        table = Table("test", meta, Column("id", Integer), Column("value", Integer))
+        
+        subq = select(table.c.id).where(table.c.value > 100).subquery()
+        stmt = select(subq.c.id)
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "SELECT" in sql
+        assert "FROM" in sql
+        # Should have nested SELECT
+        assert sql.count("SELECT") >= 2
+    
+    def test_parameter_style_consistency(self, dialect_cls):
+        """Test parameter binding style is consistent per driver"""
+        dialect = dialect_cls()
+        
+        stmt = select(literal_column("col")).where(literal_column("col") == bindparam("test_param"))
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        # redshift_connector uses format style, psycopg2 uses pyformat
+        if "redshift_connector" in dialect_cls.__name__:
+            assert "%(test_param)s" in sql or "%s" in sql
+        else:
+            assert "%(test_param)s" in sql  # psycopg2 also uses pyformat
+    
+    def test_function_compilation_consistency(self, dialect_cls):
+        """Test function compilation is consistent across drivers"""
+        dialect = dialect_cls()
+        
+        # Test NOW() -> SYSDATE conversion
+        stmt = select(func.NOW())
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        assert "SYSDATE" in sql
+        
+        # Test other Redshift functions
+        stmt = select(func.GETDATE())
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        assert "getdate" in sql.lower()
+    
+    def test_delete_using_compilation(self, dialect_cls):
+        """Test DELETE ... USING compilation across drivers"""
+        dialect = dialect_cls()
+        meta = MetaData()
+        table1 = Table("table1", meta, Column("id", Integer))
+        table2 = Table("table2", meta, Column("id", Integer))
+        
+        # This tests the custom DELETE compilation in dialect.py
+        from sqlalchemy import delete
+        stmt = delete(table1).where(table1.c.id == table2.c.id)
+        compiled = stmt.compile(dialect=dialect)
+        sql = str(compiled)
+        
+        assert "DELETE FROM" in sql
+        assert "USING" in sql  # Redshift-specific DELETE ... USING syntax
+        assert "table1" in sql
+        assert "table2" in sql
