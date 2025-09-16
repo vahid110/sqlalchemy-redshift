@@ -171,6 +171,15 @@
   - [x] Basic functionality maintained
   - [x] PyPy compatibility verified
 
+## Post-SA-2.0 Cleanup Tasks
+
+### Test Suite Cleanup (Non-Critical)
+- [ ] **Doctest Failures (5 tests)**: Fix psycopg2 references in doctests for redshift_connector environments
+- [ ] **Parameter Binding Test**: Update test to handle driver differences (%s vs %(param)s)
+- [ ] **Column Reflection Test**: Fix _get_column_info super() call in RedshiftDialectMixin
+- [ ] **Authentication Test**: Handle redshift_connector import gracefully in auth tests
+- [ ] **Deprecation Warnings**: Update regex patterns and dbapi() method names
+
 ## Final Validation
 
 ### Performance Benchmarks
