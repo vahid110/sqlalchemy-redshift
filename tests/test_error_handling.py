@@ -115,3 +115,20 @@ class TestDialectErrorHandling:
         # Should have enhanced commit method
         assert hasattr(redshift_dialect, 'do_commit')
         assert callable(redshift_dialect.do_commit)
+
+
+class TestDisconnectDetection:
+    """Test disconnect detection functionality"""
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_redshift_connector
+    ])
+    def test_is_disconnect_method_exists(self, dialect_cls):
+        """Ensure is_disconnect method exists for connection recycling"""
+        dialect = dialect_cls()
+        assert hasattr(dialect, 'is_disconnect'), f"Missing is_disconnect method for {dialect_cls}"
+    
+    def test_redshift_connector_has_do_ping(self):
+        """Verify redshift_connector has do_ping for health checks"""
+        dialect = RedshiftDialect_redshift_connector()
+        assert hasattr(dialect, 'do_ping'), "Missing do_ping method for connection health checks"

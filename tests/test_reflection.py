@@ -3,6 +3,11 @@ from sqlalchemy import MetaData, Table, inspect
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.exc import NoSuchTableError
 import sqlalchemy as sa
+from sqlalchemy_redshift.dialect import (
+    RedshiftDialect_psycopg2, 
+    RedshiftDialect_psycopg2cffi,
+    RedshiftDialect_redshift_connector
+)
 
 from rs_sqla_test_utils import models, utils
 
@@ -260,3 +265,35 @@ def test_external_table_reflection(redshift_engine, iam_role_arn):
         )
         if isinstance(redshift_engine.dialect, RedshiftDialect_psycopg2cffi):
             conn.execute(sa.text("COMMIT"))
+
+
+class TestReflectionParity:
+    """Test that reflection returns empty structures instead of exceptions"""
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_psycopg2, 
+        RedshiftDialect_psycopg2cffi,
+        RedshiftDialect_redshift_connector
+    ])
+    def test_get_indexes_returns_empty(self, dialect_cls):
+        """Redshift doesn't support traditional indexes - should return empty list"""
+        dialect = dialect_cls()
+        # Mock connection for testing
+        result = dialect.get_indexes(None, "test_table", "public")
+        assert result == []
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_psycopg2, 
+        RedshiftDialect_psycopg2cffi,
+        RedshiftDialect_redshift_connector
+    ])
+    def test_reflection_methods_exist(self, dialect_cls):
+        """Ensure all required reflection methods exist"""
+        dialect = dialect_cls()
+        required_methods = [
+            'get_table_names', 'get_columns', 'get_pk_constraint',
+            'get_foreign_keys', 'get_indexes', 'get_unique_constraints',
+            'get_view_names', 'get_view_definition', 'has_table'
+        ]
+        for method in required_methods:
+            assert hasattr(dialect, method), f"Missing method: {method}"

@@ -187,3 +187,51 @@ def test_custom_type_compilation(custom_datatype):
     dt = custom_datatype()
     compiled_dt = dt.compile()
     assert compiled_dt == dt.__visit_name__
+
+
+class TestTypeCorrectness:
+    """Test basic type compilation correctness across all drivers"""
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        sqlalchemy_redshift.dialect.RedshiftDialect_psycopg2, 
+        sqlalchemy_redshift.dialect.RedshiftDialect_psycopg2cffi,
+        sqlalchemy_redshift.dialect.RedshiftDialect_redshift_connector
+    ])
+    def test_basic_type_compilation(self, dialect_cls):
+        """Test that basic Redshift types compile correctly"""
+        from sqlalchemy_redshift.dialect import SUPER, GEOMETRY, TIMESTAMPTZ
+        
+        dialect = dialect_cls()
+        type_compiler = dialect.type_compiler
+        
+        # Test Redshift-specific types compile
+        assert type_compiler.process(SUPER()) == "SUPER"
+        assert type_compiler.process(GEOMETRY()) == "GEOMETRY"
+        assert type_compiler.process(TIMESTAMPTZ()) == "TIMESTAMPTZ"
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        sqlalchemy_redshift.dialect.RedshiftDialect_psycopg2, 
+        sqlalchemy_redshift.dialect.RedshiftDialect_psycopg2cffi,
+        sqlalchemy_redshift.dialect.RedshiftDialect_redshift_connector
+    ])
+    def test_standard_type_compilation(self, dialect_cls):
+        """Test that standard SQL types compile correctly"""
+        import sqlalchemy as sa
+        from sqlalchemy import MetaData, Table, Column, Integer, String, Boolean
+        
+        dialect = dialect_cls()
+        meta = MetaData()
+        table = Table("test", meta,
+            Column("int_col", Integer),
+            Column("str_col", String(50)),
+            Column("bool_col", Boolean)
+        )
+        
+        # Should compile without errors
+        create_sql = sa.schema.CreateTable(table).compile(dialect=dialect)
+        sql_str = str(create_sql)
+        
+        assert "CREATE TABLE" in sql_str
+        assert "int_col" in sql_str
+        assert "str_col" in sql_str
+        assert "bool_col" in sql_str

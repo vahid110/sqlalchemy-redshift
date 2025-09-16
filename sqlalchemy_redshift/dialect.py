@@ -1438,6 +1438,27 @@ class Psycopg2RedshiftDialectMixin(RedshiftDialectMixin):
         default_args.update(cparams)
         return cargs, default_args
 
+    def set_isolation_level(self, connection, level):
+        """
+        Sets the isolation level for the current transaction.
+        Redshift only supports READ COMMITTED and AUTOCOMMIT.
+        """
+        level = level.replace("_", " ")
+        
+        # adjust for ConnectionFairy possibly being present
+        if hasattr(connection, "connection"):
+            connection = connection.connection
+        
+        if level == "AUTOCOMMIT":
+            connection.autocommit = True
+        elif level.upper() in ("READ COMMITTED", "READ_COMMITTED"):
+            connection.autocommit = False
+            # Redshift default is READ committed, no explicit SET needed
+        else:
+            raise sa.exc.ArgumentError(
+                f"Redshift only supports READ committed and autocommit isolation levels, got: {level}"
+            )
+
     @classmethod
     def dbapi(cls):
         try:
