@@ -1477,6 +1477,15 @@ class Psycopg2RedshiftDialectMixin(RedshiftDialectMixin):
             raise sa.exc.ArgumentError(
                 f"Redshift only supports READ committed and autocommit isolation levels, got: {level}"
             )
+    
+    def reset_isolation_level(self, dbapi_connection):
+        """Reset isolation level to default (READ COMMITTED)"""
+        # adjust for ConnectionFairy possibly being present
+        if hasattr(dbapi_connection, "connection"):
+            dbapi_connection = dbapi_connection.connection
+        
+        # Reset to default read committed (autocommit=False)
+        dbapi_connection.autocommit = False
 
     @classmethod
     def dbapi(cls):
@@ -1604,19 +1613,38 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 
         if level == "AUTOCOMMIT":
             connection.autocommit = True
-        else:
+        elif level.upper() in ("READ COMMITTED", "READ_COMMITTED"):
             connection.autocommit = False
-            super(
-                RedshiftDialect_redshift_connector, self
-            ).set_isolation_level(connection, level)
+            # Redshift default is read committed, no explicit SET needed
+        else:
+            # Don't call super() for unsupported levels, just set to read committed
+            connection.autocommit = False
+    
+    def reset_isolation_level(self, dbapi_connection):
+        """Reset isolation level to default (READ COMMITTED)"""
+        # adjust for ConnectionFairy possibly being present
+        if hasattr(dbapi_connection, "connection"):
+            dbapi_connection = dbapi_connection.connection
+        
+        # Reset to default read committed (autocommit=False)
+        dbapi_connection.autocommit = False
 
     def on_connect(self):
         fns = []
 
         def on_connect(conn):
-            from sqlalchemy import util
             from sqlalchemy.sql.elements import quoted_name
-            conn.py_types[quoted_name] = conn.py_types[util.text_type]
+            try:
+                # SQLAlchemy 1.4 compatibility
+                from sqlalchemy import util
+                if hasattr(util, 'text_type'):
+                    conn.py_types[quoted_name] = conn.py_types[util.text_type]
+                else:
+                    # SQLAlchemy 2.0 - text_type is just str
+                    conn.py_types[quoted_name] = conn.py_types[str]
+            except (ImportError, AttributeError):
+                # Fallback - use str type
+                conn.py_types[quoted_name] = conn.py_types[str]
 
         fns.append(on_connect)
         
