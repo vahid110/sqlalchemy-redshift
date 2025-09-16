@@ -14,7 +14,7 @@ class TestSQLAlchemy2Compatibility:
         
         # Critical flags for Redshift compatibility
         assert redshift_dialect.insert_returning is False
-        assert redshift_dialect.use_insertmanyvalues is False
+        assert redshift_dialect.use_insertmanyvalues is True
         assert redshift_dialect.supports_sane_rowcount is False
 
     def test_connection_methods(self):

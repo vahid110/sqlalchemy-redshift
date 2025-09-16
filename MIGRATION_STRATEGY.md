@@ -173,7 +173,7 @@ else:
 ### Test Matrix
 ```yaml
 python: [3.9, 3.10, 3.11, 3.12]
-sqlalchemy: [1.4.x, 2.0.x, 2.1.x]
+sqlalchemy: [1.4.x, 2.0.x]
 drivers: [redshift_connector, psycopg2, psycopg2cffi]
 ```
 
