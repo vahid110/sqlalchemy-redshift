@@ -630,6 +630,29 @@ class RelationKey(namedtuple('RelationKey', ('name', 'schema'))):
 
 
 class RedshiftCompiler(PGCompiler):
+    def limit_clause(self, select, **kw):
+        """Generate LIMIT/OFFSET clause using public SQLAlchemy API"""
+        # First try parent implementation
+        text = super().limit_clause(select, **kw)
+        
+        # If parent returns empty but we have offset, add LIMIT ALL
+        if not text.strip():
+            # Check for offset using both SA 1.4 and 2.0 patterns
+            has_offset = (
+                (hasattr(select, '_offset_clause') and select._offset_clause is not None) or
+                (hasattr(select, '_offset') and select._offset is not None)
+            )
+            
+            if has_offset:
+                # Get offset value using safe attribute access
+                offset_clause = (
+                    getattr(select, '_offset_clause', None) or 
+                    getattr(select, '_offset', None)
+                )
+                if offset_clause is not None:
+                    text = "\n LIMIT ALL OFFSET " + self.process(offset_clause, **kw)
+        
+        return text
 
     def visit_now_func(self, fn, **kw):
         return "SYSDATE"
@@ -1446,30 +1469,6 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     supports_statement_cache = True      # Enable for performance
 
     class RedshiftCompiler_redshift_connector(RedshiftCompiler, PGCompiler):
-        def limit_clause(self, select, **kw):
-            """Generate LIMIT/OFFSET clause using public SQLAlchemy API"""
-            # First try parent implementation
-            text = super().limit_clause(select, **kw)
-            
-            # If parent returns empty but we have offset, add LIMIT ALL
-            if not text.strip():
-                # Check for offset using both SA 1.4 and 2.0 patterns
-                has_offset = (
-                    (hasattr(select, '_offset_clause') and select._offset_clause is not None) or
-                    (hasattr(select, '_offset') and select._offset is not None)
-                )
-                
-                if has_offset:
-                    # Get offset value using safe attribute access
-                    offset_clause = (
-                        getattr(select, '_offset_clause', None) or 
-                        getattr(select, '_offset', None)
-                    )
-                    if offset_clause is not None:
-                        text = "\n LIMIT ALL OFFSET " + self.process(offset_clause, **kw)
-            
-            return text
-
         def visit_mod_binary(self, binary, operator, **kw):
             return (
                 self.process(binary.left, **kw)
