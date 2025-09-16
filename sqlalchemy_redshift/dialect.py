@@ -839,6 +839,11 @@ class RedshiftDialectMixin(DefaultDialect):
 
     name = 'redshift'
     max_identifier_length = 127
+    
+    # Redshift never supports RETURNING regardless of driver
+    insert_returning = False
+    use_insertmanyvalues = True  # 2.0 bulk INSERT VALUES optimization
+    supports_sane_rowcount = False
 
     statement_compiler = RedshiftCompiler
     ddl_compiler = RedshiftDDLCompiler
@@ -1438,32 +1443,31 @@ class RedshiftDialect_psycopg2cffi(
 
 class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     # SQLAlchemy 2.0 compatibility flags - critical for Redshift
-    insert_returning = False              # Redshift doesn't support RETURNING
-    use_insertmanyvalues = True          # Enable SA 2.0 bulk insert optimization
-    supports_sane_rowcount = False       # Redshift rowcount quirks
     supports_statement_cache = True      # Enable for performance
 
     class RedshiftCompiler_redshift_connector(RedshiftCompiler, PGCompiler):
         def limit_clause(self, select, **kw):
             """Generate LIMIT/OFFSET clause using public SQLAlchemy API"""
-            text = ""
+            # First try parent implementation
+            text = super().limit_clause(select, **kw)
             
-            # Use public API - works with both SA 1.4 and 2.0
-            limit_clause = getattr(select, '_limit_clause', None)
-            offset_clause = getattr(select, '_offset_clause', None)
+            # If parent returns empty but we have offset, add LIMIT ALL
+            if not text.strip():
+                # Check for offset using both SA 1.4 and 2.0 patterns
+                has_offset = (
+                    (hasattr(select, '_offset_clause') and select._offset_clause is not None) or
+                    (hasattr(select, '_offset') and select._offset is not None)
+                )
+                
+                if has_offset:
+                    # Get offset value using safe attribute access
+                    offset_clause = (
+                        getattr(select, '_offset_clause', None) or 
+                        getattr(select, '_offset', None)
+                    )
+                    if offset_clause is not None:
+                        text = "\n LIMIT ALL OFFSET " + self.process(offset_clause, **kw)
             
-            # Fallback to SA 2.0 API if available
-            if limit_clause is None and hasattr(select, '_limit'):
-                limit_clause = getattr(select, '_limit', None)
-            if offset_clause is None and hasattr(select, '_offset'):
-                offset_clause = getattr(select, '_offset', None)
-            
-            if limit_clause is not None:
-                text += " \n LIMIT " + self.process(limit_clause, **kw)
-            if offset_clause is not None:
-                if limit_clause is None:
-                    text += "\n LIMIT ALL"
-                text += " OFFSET " + self.process(offset_clause, **kw)
             return text
 
         def visit_mod_binary(self, binary, operator, **kw):
