@@ -224,11 +224,13 @@
   - [x] Test Inspector-based reflection patterns
   - [x] All existing reflection tests pass (36/36)
 
-- [ ] **5. Bulk Insert Validation (HIGH)**
-  - [ ] Test `use_insertmanyvalues=True` with complex types
-  - [ ] Validate with `insert_returning=False` constraint
-  - [ ] Test ORM bulk operations with SUPER/JSON/arrays
-  - [ ] Verify no hidden RETURNING assumptions
+- [x] **5. Bulk Insert Validation (HIGH)**
+  - [x] Test `use_insertmanyvalues=True` with complex types
+  - [x] Validate with `insert_returning=False` constraint
+  - [x] Test ORM bulk operations with SUPER/JSON/arrays
+  - [x] Verify no hidden RETURNING assumptions
+  - [x] All bulk insert tests pass (9/9)
+  - [x] Multi-row VALUES syntax generated correctly
 
 - [ ] **6. Resilience Integration (MEDIUM)**
   - [ ] Wire circuit breakers into `do_execute`/`do_executemany`
