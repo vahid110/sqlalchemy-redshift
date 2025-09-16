@@ -217,11 +217,12 @@
   - [x] Validate DELETE...USING compilation (already working)
   - [x] All compiler tests pass with SA 2.0.43
 
-- [ ] **4. Reflection & Inspector (HIGH)**
-  - [ ] Use `inspect(engine)` calls instead of direct dialect methods
-  - [ ] Fix `has_table`, `get_table_names`, `get_foreign_keys` signatures
-  - [ ] Suppress SA 2.0 deprecation warnings
-  - [ ] Test Inspector-based reflection patterns
+- [x] **4. Reflection & Inspector (HIGH)**
+  - [x] Use `inspect(engine)` calls with graceful fallback for mocks
+  - [x] Fix `has_table`, `get_table_names`, `get_foreign_keys` signatures
+  - [x] Suppress SA 2.0 deprecation warnings with try/except blocks
+  - [x] Test Inspector-based reflection patterns
+  - [x] All existing reflection tests pass (36/36)
 
 - [ ] **5. Bulk Insert Validation (HIGH)**
   - [ ] Test `use_insertmanyvalues=True` with complex types

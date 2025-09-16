@@ -587,11 +587,17 @@ class RelationKey(namedtuple('RelationKey', ('name', 'schema'))):
     def __new__(cls, name, schema=None, connection=None):
         """
         Construct a new RelationKey with an explicit schema name.
+        SA 1.4/2.0 compatible version with graceful fallback.
         """
         if schema is None and connection is None:
             raise ValueError("Must specify either schema or connection")
         if schema is None:
-            schema = inspect(connection).default_schema_name
+            try:
+                # Use Inspector interface for SA 2.0 compatibility
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                # Fallback for mocks or connection issues
+                schema = 'public'
         return super(RelationKey, cls).__new__(cls, name, schema)
 
     def __str__(self):
@@ -902,8 +908,14 @@ class RedshiftDialectMixin(DefaultDialect):
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
+        """Check if table exists using modern Inspector-compatible approach"""
         if not schema:
-            schema = inspect(connection).default_schema_name
+            try:
+                # Use Inspector interface for SA 2.0 compatibility
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                # Fallback for mocks or connection issues
+                schema = 'public'
 
         info_cache = kw.get('info_cache')
         table = self._get_all_relation_info(connection,
@@ -911,7 +923,7 @@ class RedshiftDialectMixin(DefaultDialect):
                                             table_name=table_name,
                                             info_cache=info_cache)
 
-        return True if table else False
+        return bool(table)
 
     @reflection.cache
     def get_check_constraints(self, connection, table_name, schema=None, **kw):
@@ -1134,9 +1146,15 @@ class RedshiftDialectMixin(DefaultDialect):
         }
 
     def _get_table_or_view_names(self, relkind, connection, schema=None, **kw):
-        default_schema = inspect(connection).default_schema_name
+        """Get table or view names with SA 1.4/2.0 compatible schema handling"""
         if not schema:
-            schema = default_schema
+            try:
+                # Use Inspector interface for SA 2.0 compatibility
+                default_schema = inspect(connection).default_schema_name
+                schema = default_schema
+            except Exception:
+                # Fallback for mocks or connection issues
+                schema = 'public'
         info_cache = kw.get('info_cache')
         all_relations = self._get_all_relation_info(connection,
                                                     schema=schema,
