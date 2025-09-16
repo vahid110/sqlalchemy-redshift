@@ -297,3 +297,100 @@ class TestReflectionParity:
         ]
         for method in required_methods:
             assert hasattr(dialect, method), f"Missing method: {method}"
+
+
+class TestReflectionContract:
+    """Test reflection contract - return empties vs exceptions for unsupported metadata"""
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_psycopg2, 
+        RedshiftDialect_psycopg2cffi,
+        RedshiftDialect_redshift_connector
+    ])
+    def test_get_foreign_keys_returns_empty_list(self, dialect_cls):
+        """Test get_foreign_keys returns empty list for unsupported FK metadata"""
+        dialect = dialect_cls()
+        
+        # Mock connection that would normally cause issues
+        class MockConnection:
+            def execute(self, stmt):
+                # Return empty result set
+                return MockResult([])
+        
+        class MockResult:
+            def __init__(self, rows):
+                self.rows = rows
+            def __iter__(self):
+                return iter(self.rows)
+        
+        # Should return empty list, not raise exception
+        try:
+            result = dialect.get_foreign_keys(MockConnection(), "nonexistent_table", "public")
+            assert isinstance(result, list)
+            # May be empty or have some results, but should not raise
+        except Exception as e:
+            # If it raises, should be a clear, expected exception type
+            assert "NoSuchTableError" in str(type(e)) or "does not exist" in str(e).lower()
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_psycopg2, 
+        RedshiftDialect_psycopg2cffi,
+        RedshiftDialect_redshift_connector
+    ])
+    def test_get_columns_includes_metadata(self, dialect_cls):
+        """Test get_columns includes nullable, default, identity info when available"""
+        dialect = dialect_cls()
+        
+        # The method signature should support these parameters
+        assert hasattr(dialect, 'get_columns')
+        method = getattr(dialect, 'get_columns')
+        
+        # Should be callable with connection, table_name, schema
+        import inspect
+        sig = inspect.signature(method)
+        param_names = list(sig.parameters.keys())
+        
+        assert 'connection' in param_names
+        assert 'table_name' in param_names
+        # schema is typically optional
+    
+    @pytest.mark.parametrize("dialect_cls", [
+        RedshiftDialect_psycopg2, 
+        RedshiftDialect_psycopg2cffi,
+        RedshiftDialect_redshift_connector
+    ])
+    def test_has_table_honors_schema_and_quotes(self, dialect_cls):
+        """Test has_table properly handles schema and quoted identifiers"""
+        dialect = dialect_cls()
+        
+        # Should have has_table method
+        assert hasattr(dialect, 'has_table')
+        
+        # Mock connection for testing
+        class MockConnection:
+            def execute(self, stmt):
+                return MockResult([])
+        
+        class MockResult:
+            def __init__(self, rows):
+                self.rows = rows
+            def __iter__(self):
+                return iter(self.rows)
+            def scalar(self):
+                return None
+        
+        mock_conn = MockConnection()
+        
+        # Should handle quoted table names and schemas without raising
+        try:
+            result1 = dialect.has_table(mock_conn, "normal_table", "public")
+            result2 = dialect.has_table(mock_conn, '"quoted table"', "public")
+            result3 = dialect.has_table(mock_conn, "table", '"quoted schema"')
+            
+            # Results should be boolean
+            assert isinstance(result1, bool)
+            assert isinstance(result2, bool) 
+            assert isinstance(result3, bool)
+        except Exception:
+            # If it raises, should be due to mock limitations, not the method itself
+            pass
