@@ -62,3 +62,7 @@ target/
 
 # Database credentials
 config.ini
+# Test credentials - never commit real credentials
+tests/redshift_test.ini
+
+# Existing gitignore content would be preserved

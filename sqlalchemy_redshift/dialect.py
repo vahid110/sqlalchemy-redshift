@@ -4,8 +4,18 @@ import re
 from collections import defaultdict, namedtuple
 from logging import getLogger
 
-import pkg_resources
 import sqlalchemy as sa
+
+# Modern resource access with fallback for Python 3.8
+try:
+    from importlib.resources import files
+except ImportError:
+    try:
+        from importlib_resources import files
+    except ImportError:
+        # Fallback to pkg_resources for very old environments
+        import pkg_resources
+        files = None
 from packaging.version import Version
 from sqlalchemy import inspect
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
@@ -1423,12 +1433,21 @@ class Psycopg2RedshiftDialectMixin(RedshiftDialectMixin):
         Overrides interface
         :meth:`~sqlalchemy.engine.interfaces.Dialect.create_connect_args`.
         """
+        # Get CA bundle path using modern importlib.resources
+        if files is not None:
+            try:
+                ca_bundle_path = str(files('sqlalchemy_redshift').joinpath('redshift-ca-bundle.crt'))
+            except Exception:
+                # Fallback for development/editable installs
+                import os
+                ca_bundle_path = os.path.join(os.path.dirname(__file__), 'redshift-ca-bundle.crt')
+        else:
+            # pkg_resources fallback
+            ca_bundle_path = pkg_resources.resource_filename(__name__, 'redshift-ca-bundle.crt')
+        
         default_args = {
             'sslmode': 'verify-full',
-            'sslrootcert': pkg_resources.resource_filename(
-                __name__,
-                'redshift-ca-bundle.crt'
-            ),
+            'sslrootcert': ca_bundle_path,
         }
         cargs, cparams = (
             super(Psycopg2RedshiftDialectMixin, self).create_connect_args(

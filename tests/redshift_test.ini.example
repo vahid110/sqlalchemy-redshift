@@ -1,0 +1,15 @@
+[redshift]
+# Redshift cluster connection details
+host = my-cluster.abc123.us-east-1.redshift.amazonaws.com
+database = dev
+user = testuser
+password = mypassword
+port = 5439
+
+# Optional: S3 bucket for COPY/UNLOAD tests
+s3_bucket = my-test-bucket
+
+# Notes:
+# - Copy this file to redshift_test.ini and populate with real values
+# - Environment variables take precedence over INI file
+# - INI file is gitignored for security
