@@ -191,13 +191,72 @@
 - [ ] Community feedback incorporated
 - [ ] Release notes prepared
 
+## CRITICAL BLOCKERS FOR TRUE SA 2.0 COMPATIBILITY
+
+### Phase 4: True SA 2.0 Compatibility (Critical Issues)
+
+- [x] **1. Packaging Constraint (CRITICAL)**
+  - [x] Update setup.py: `SQLAlchemy>=1.4.48,<3` (currently `<2.0.0`)
+  - [x] Add Python 3.10-3.12 classifiers
+  - [x] Update python_requires to >=3.8 (dropped 3.4-3.7)
+  - [x] Test installation with SA 2.0.x
+  - [ ] Document URL forms for psycopg2/redshift-connector extras
+
+- [ ] **2. Test Modernization (CRITICAL)**
+  - [ ] Replace `select([col])` → `select(col)` throughout tests
+  - [ ] Remove `engine.execute` → use `conn.execute`
+  - [ ] Update to new `Result`/`Row` API patterns
+  - [ ] Add bulk insert tests (identity cols, NULLs, JSON/SUPER, arrays)
+  - [ ] Enable warnings-as-errors to catch deprecations
+
+- [ ] **3. Compiler Internals (CRITICAL)**
+  - [ ] Stop reading private `Select` attrs (`_limit_clause`, `_limit`)
+  - [ ] Override visitors via public hooks (follow PostgreSQL patterns)
+  - [ ] Add tests for LIMIT/OFFSET with CTEs, subqueries, ORDER BY
+  - [ ] Validate DELETE...USING compilation
+
+- [ ] **4. Reflection & Inspector (HIGH)**
+  - [ ] Use `inspect(engine)` calls instead of direct dialect methods
+  - [ ] Fix `has_table`, `get_table_names`, `get_foreign_keys` signatures
+  - [ ] Suppress SA 2.0 deprecation warnings
+  - [ ] Test Inspector-based reflection patterns
+
+- [ ] **5. Bulk Insert Validation (HIGH)**
+  - [ ] Test `use_insertmanyvalues=True` with complex types
+  - [ ] Validate with `insert_returning=False` constraint
+  - [ ] Test ORM bulk operations with SUPER/JSON/arrays
+  - [ ] Verify no hidden RETURNING assumptions
+
+- [ ] **6. Resilience Integration (MEDIUM)**
+  - [ ] Wire circuit breakers into `do_execute`/`do_executemany`
+  - [ ] Implement `is_disconnect` for pool recycling
+  - [ ] Add configurable transient-error retry
+  - [ ] Enable pool pre-ping documentation
+
+- [ ] **7. Driver Matrix Testing (MEDIUM)**
+  - [ ] Update tox.ini: Add SA 2.0.x environments (currently only SA 1.3/1.4)
+  - [ ] Tox matrix: Py 3.8-3.12 × SA 1.4/2.0 × drivers
+  - [ ] Add redshift_connector to tox environments (not just pytest args)
+  - [ ] Test statement caching across drivers
+  - [ ] Validate paramstyles and compilation
+  - [ ] Test repeated compilation scenarios
+
+- [ ] **8. Alembic Integration (LOW)**
+  - [ ] Create smoke migration test
+  - [ ] Test with Alembic 1.12/1.13 + SA 2.0
+  - [ ] Validate DDL compilation in migrations
+  - [ ] Test create table → add column → drop column
+
 ## Success Criteria (All Must Pass)
-- [ ] ✅ All authentication methods working
-- [ ] ✅ SQLAlchemy 1.4 & 2.0 compatibility verified
-- [ ] ✅ No performance regression detected
-- [ ] ✅ 100% test coverage achieved
-- [ ] ✅ Complete documentation available
-- [ ] ✅ Zero breaking changes for existing users
+- [ ] ✅ All 8 critical blockers resolved
+- [ ] ✅ Packaging allows SA 2.0 installation
+- [ ] ✅ All tests pass with SA 1.4 AND 2.0
+- [ ] ✅ No private API usage in compiler
+- [ ] ✅ Modern Inspector patterns used
+- [ ] ✅ Bulk operations validated with complex types
+- [ ] ✅ Resilience features wired into execution
+- [ ] ✅ Multi-driver matrix testing complete
+- [ ] ✅ Alembic migration compatibility verified
 
 ---
 

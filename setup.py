@@ -17,11 +17,11 @@ setup(
     url='https://github.com/sqlalchemy-redshift/sqlalchemy-redshift',
     packages=['sqlalchemy_redshift', 'redshift_sqlalchemy'],
     package_data={'sqlalchemy_redshift': ['redshift-ca-bundle.crt']},
-    python_requires='>=3.4',
+    python_requires='>=3.8',
     install_requires=[
-        # requires sqlalchemy.sql.base.DialectKWArgs.dialect_options, new in
-        # version 0.9.2
-        'SQLAlchemy>=0.9.2,<2.0.0',
+        # SQLAlchemy 1.4.48+ required for modern dialect features
+        # SQLAlchemy 2.0+ supported with compatibility layer
+        'SQLAlchemy>=1.4.48,<3.0.0',
         'packaging',
     ],
     classifiers=[
@@ -32,13 +32,11 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     entry_points={
         'sqlalchemy.dialects': [
