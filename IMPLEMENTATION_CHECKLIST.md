@@ -232,7 +232,20 @@
   - [x] All bulk insert tests pass (9/9)
   - [x] Multi-row VALUES syntax generated correctly
 
-- [ ] **6. Resilience Integration (MEDIUM)**
+- [x] **6. Function & Operator Modernization (HIGH)**
+  - [x] Comprehensive function compilation tests (28 tests)
+  - [x] Redshift-specific functions (SYSDATE, DATEADD, DATEDIFF, etc.)
+  - [x] JSON/SUPER functions (JSON_PARSE, JSON_EXTRACT_PATH_TEXT, etc.)
+  - [x] Window functions (ROW_NUMBER, RANK, LAG/LEAD)
+  - [x] Aggregate functions (APPROXIMATE, MEDIAN, PERCENTILE_CONT)
+  - [x] Operators and expressions (modulo, ILIKE, CASE, CAST)
+  - [x] Boolean expressions (AND, OR, NOT with SQLAlchemy optimizations)
+  - [x] Parameter binding (named and positional parameters)
+  - [x] LIMIT/OFFSET compilation using public API
+  - [x] All tests pass with SQLAlchemy 2.0.43 (28/28)
+  - [x] Case-insensitive testing accounts for SQLAlchemy normalization
+
+- [ ] **7. Resilience Integration (MEDIUM)**
   - [ ] Wire circuit breakers into `do_execute`/`do_executemany`
   - [ ] Implement `is_disconnect` for pool recycling
   - [ ] Add configurable transient-error retry
