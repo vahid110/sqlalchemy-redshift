@@ -1488,19 +1488,34 @@ class Psycopg2RedshiftDialectMixin(RedshiftDialectMixin):
         dbapi_connection.autocommit = False
 
     @classmethod
-    def dbapi(cls):
+    def import_dbapi(cls):
         try:
             return importlib.import_module(cls.driver)
         except ImportError:
             raise ImportError(
                 'No module named {}'.format(cls.driver)
             )
+    
+    @classmethod
+    def dbapi(cls):
+        """Backwards compatibility - use import_dbapi instead"""
+        return cls.import_dbapi()
 
 
 class RedshiftDialect_psycopg2(
     Psycopg2RedshiftDialectMixin, PGDialect_psycopg2
 ):
     supports_statement_cache = False
+    
+    @classmethod
+    def import_dbapi(cls):
+        """Modern import method for SQLAlchemy 2.0 compatibility"""
+        try:
+            return importlib.import_module(cls.driver)
+        except ImportError:
+            raise ImportError(
+                'No module named {}'.format(cls.driver)
+            )
 
 
 # Add RedshiftDialect synonym for backwards compatibility.
@@ -1511,6 +1526,16 @@ class RedshiftDialect_psycopg2cffi(
     Psycopg2RedshiftDialectMixin, PGDialect_psycopg2cffi
 ):
     supports_statement_cache = False
+    
+    @classmethod
+    def import_dbapi(cls):
+        """Modern import method for SQLAlchemy 2.0 compatibility"""
+        try:
+            return importlib.import_module(cls.driver)
+        except ImportError:
+            raise ImportError(
+                'No module named {}'.format(cls.driver)
+            )
 
 
 class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
@@ -1564,7 +1589,7 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         self.circuit_breaker = CircuitBreaker()
 
     @classmethod
-    def dbapi(cls):
+    def import_dbapi(cls):
         try:
             driver_module = importlib.import_module(cls.driver)
 
@@ -1580,6 +1605,11 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
                 'No module named redshift_connector. Please install '
                 'redshift_connector to use this sqlalchemy dialect.'
             )
+    
+    @classmethod
+    def dbapi(cls):
+        """Backwards compatibility - use import_dbapi instead"""
+        return cls.import_dbapi()
 
     def set_client_encoding(self, connection, client_encoding):
         """
@@ -1619,6 +1649,18 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         else:
             # Don't call super() for unsupported levels, just set to read committed
             connection.autocommit = False
+    
+    def _assert_and_set_isolation_level(self, dbapi_conn, level):
+        """Override to handle AUTOCOMMIT for redshift_connector"""
+        level = level.replace("_", " ").upper()
+        
+        if level == "AUTOCOMMIT":
+            dbapi_conn.autocommit = True
+        elif level in ("READ COMMITTED", "READ_COMMITTED"):
+            dbapi_conn.autocommit = False
+        else:
+            # For redshift_connector, only support AUTOCOMMIT and READ COMMITTED
+            dbapi_conn.autocommit = False
     
     def reset_isolation_level(self, dbapi_connection):
         """Reset isolation level to default (READ COMMITTED)"""

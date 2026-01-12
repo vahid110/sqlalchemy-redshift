@@ -29,15 +29,7 @@ except ImportError:
     from conftest import TEST_CONFIG
 
 
-# Skip all tests if required config not present
-pytestmark = pytest.mark.skipif(
-    not all([
-        TEST_CONFIG.get('REDSHIFT_TEST_HOST'),
-        TEST_CONFIG.get('REDSHIFT_TEST_DATABASE'),
-        TEST_CONFIG.get('REDSHIFT_TEST_USER'),
-    ]),
-    reason="Real cluster tests require REDSHIFT_TEST_* config (env vars or tests/redshift_test.ini)"
-)
+# Tests will fail with clear error messages if credentials are missing
 
 
 @pytest.fixture(scope="module", params=['psycopg2', 'redshift_connector'])
@@ -45,12 +37,12 @@ def real_engine(request):
     """Create engine for real Redshift cluster testing"""
     driver = request.param
     
-    # Skip redshift_connector if not available
+    # Let redshift_connector fail with clear error if not available
     if driver == 'redshift_connector':
         try:
             import redshift_connector
         except ImportError:
-            pytest.skip("redshift_connector not available")
+            raise ImportError(f"redshift_connector not available for {driver} tests")
     
     host = TEST_CONFIG.get('REDSHIFT_TEST_HOST')
     database = TEST_CONFIG.get('REDSHIFT_TEST_DATABASE')
@@ -154,10 +146,6 @@ class TestRealClusterSmoke:
             conn.commit()
 
 
-@pytest.mark.skipif(
-    not TEST_CONFIG.get('REDSHIFT_TEST_S3_BUCKET'),
-    reason="S3 tests require REDSHIFT_TEST_S3_BUCKET config (env var or tests/redshift_test.ini)"
-)
 class TestRealClusterCopyUnload:
     """COPY/UNLOAD tests requiring S3 access"""
     
@@ -204,14 +192,8 @@ class TestRealClusterCopyUnload:
                 # (This would require additional S3 permissions)
                 
             except Exception as e:
-                # Log the error but don't fail the test if it's permission-related
-                error_msg = str(e).lower()
-                if any(keyword in error_msg for keyword in [
-                    'permission', 'access', 'invalid credentials', 'credentials'
-                ]):
-                    pytest.skip(f"S3 permissions/credentials issue: {e}")
-                else:
-                    raise
+                # Let all errors fail the test with clear messages
+                raise Exception(f"UNLOAD test failed: {e}")
     
     def test_copy_from_s3_format(self, real_engine):
         """Test COPY command format (without actual S3 data)"""
@@ -243,12 +225,8 @@ class TestRealClusterCopyUnload:
             try:
                 conn.execute(text(copy_sql))
             except Exception as e:
-                # Expected to fail due to missing S3 file
-                # Just verify the SQL was properly formatted and sent
-                error_msg = str(e).lower()
-                assert any(keyword in error_msg for keyword in [
-                    'no such key', 'does not exist', 'not found', 'access denied', 'invalid credentials'
-                ]), f"Unexpected error: {e}"
+                # Let the test fail with the actual error for better debugging
+                raise Exception(f"COPY test failed: {e}")
 
 
 if __name__ == "__main__":
