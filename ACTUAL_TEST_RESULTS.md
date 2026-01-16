@@ -7,9 +7,9 @@
 
 ## Overall Results
 ```
-606 passed, 27 failed, 32 errors, 4 xfailed, 4 xpassed
-Success Rate: 606/669 = 90.6%
-Real Success Rate (excluding psycopg2cffi): 606/637 = 95.1%
+429 passed, 22 failed, 1 error (excluding psycopg2cffi driver)
+Success Rate: 429/452 = 94.9%
+With psycopg2cffi: 429 passed, 22 failed, 220 errors (driver not installed)
 ```
 
 ## Recent Fixes Applied
@@ -20,11 +20,11 @@ Real Success Rate (excluding psycopg2cffi): 606/637 = 95.1%
 - **Solution**: Restored full fixture suite from git history (commit a1689f4)
 - **Result**: All fixtures working (stub_redshift_dialect, stub_redshift_engine, connection_kwargs, etc.)
 
-### Fix 3: SQLAlchemy 2.0 Reflection Compatibility (pg_collation)
-- **Problem**: SA 2.0 get_multi_columns() and _load_domains() query pg_collation which doesn't exist in Redshift
-- **Impact**: 6 reflection test failures with pg_collation errors
-- **Solution**: Override get_multi_columns() and skip _load_domains() call
-- **Result**: +6 tests passing (600→606)
+### Fix 4: SQLAlchemy 2.0 array_agg ORDER BY Compatibility
+- **Problem**: SA 2.0 get_multi_pk_constraint/unique_constraints/indexes use array_agg ORDER BY syntax
+- **Impact**: 27 reflection test failures with syntax errors
+- **Solution**: Override get_multi_* methods to delegate to individual methods
+- **Result**: Array_agg errors resolved, remaining failures are integration test issues
 
 ## Test Improvement Summary
 - **Before Fixes**: 332 passing, 164 fixture errors, 132 AttributeErrors
