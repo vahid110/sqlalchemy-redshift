@@ -981,6 +981,88 @@ class RedshiftDialectMixin(DefaultDialect):
                 pass
         
         return result
+    
+    def get_multi_pk_constraint(self, connection, schema=None, filter_names=None, **kw):
+        """
+        Override SA 2.0's get_multi_pk_constraint to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support ORDER BY inside aggregate functions.
+        Delegate to get_pk_constraint() which uses Redshift-compatible queries.
+        """
+        result = {}
+        
+        if schema is None:
+            try:
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                schema = 'public'
+        
+        if filter_names:
+            table_names = filter_names
+        else:
+            table_names = self.get_table_names(connection, schema=schema, **kw)
+        
+        for table_name in table_names:
+            try:
+                pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = pk
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_unique_constraints(self, connection, schema=None, filter_names=None, **kw):
+        """
+        Override SA 2.0's get_multi_unique_constraints to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support ORDER BY inside aggregate functions.
+        Delegate to get_unique_constraints() which uses Redshift-compatible queries.
+        """
+        result = {}
+        
+        if schema is None:
+            try:
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                schema = 'public'
+        
+        if filter_names:
+            table_names = filter_names
+        else:
+            table_names = self.get_table_names(connection, schema=schema, **kw)
+        
+        for table_name in table_names:
+            try:
+                constraints = self.get_unique_constraints(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = constraints
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_indexes(self, connection, schema=None, filter_names=None, **kw):
+        """
+        Override SA 2.0's get_multi_indexes to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support traditional indexes, always returns empty.
+        """
+        result = {}
+        
+        if schema is None:
+            try:
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                schema = 'public'
+        
+        if filter_names:
+            table_names = filter_names
+        else:
+            table_names = self.get_table_names(connection, schema=schema, **kw)
+        
+        for table_name in table_names:
+            result[(schema, table_name)] = []
+        
+        return result
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
