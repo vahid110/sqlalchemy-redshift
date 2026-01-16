@@ -931,8 +931,9 @@ class RedshiftDialectMixin(DefaultDialect):
         :meth:`~sqlalchemy.engine.interfaces.Dialect.get_columns`.
         """
         cols = self._get_redshift_columns(connection, table_name, schema, **kw)
+        # Redshift doesn't support user-created domains, return empty dict
         if not self._domains:
-            self._domains = self._load_domains(connection)
+            self._domains = {}
         domains = self._domains
         columns = []
         for col in cols:
@@ -943,6 +944,43 @@ class RedshiftDialectMixin(DefaultDialect):
                 comment=col.comment)
             columns.append(column_info)
         return columns
+    
+    def get_multi_columns(self, connection, schema=None, filter_names=None, **kw):
+        """
+        Override SA 2.0's get_multi_columns to avoid querying pg_collation.
+        
+        Redshift is based on PostgreSQL 8.0.2 which predates collation support.
+        SA 2.0's get_multi_columns queries pg_attribute.attcollation and 
+        pg_catalog.pg_collation which don't exist in Redshift.
+        
+        We delegate to get_columns() which uses Redshift-compatible queries.
+        """
+        # SA 2.0 expects a dict mapping (schema, table_name) to list of column dicts
+        result = {}
+        
+        # Get all tables in schema
+        if schema is None:
+            try:
+                schema = inspect(connection).default_schema_name
+            except Exception:
+                schema = 'public'
+        
+        # If filter_names provided, only get those tables
+        if filter_names:
+            table_names = filter_names
+        else:
+            table_names = self.get_table_names(connection, schema=schema, **kw)
+        
+        # Get columns for each table
+        for table_name in table_names:
+            try:
+                columns = self.get_columns(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = columns
+            except Exception:
+                # Skip tables that fail (e.g., permission issues)
+                pass
+        
+        return result
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
@@ -1206,20 +1244,74 @@ class RedshiftDialectMixin(DefaultDialect):
     def _get_column_info(self, *args, **kwargs):
         kw = kwargs.copy()
         encode = kw.pop('encode', None)
-        if sa_version >= Version('1.3.16'):
-            # SQLAlchemy 1.3.16 introduced generated columns,
-            # not supported in redshift
-            kw['generated'] = ''
+        
+        if sa_version >= Version('2.0.0'):
+            # SQLAlchemy 2.0 removed _get_column_info, build column info directly
+            name = kwargs['name']
+            format_type = kwargs['format_type']
+            default = kwargs.get('default')
+            notnull = kwargs.get('notnull', False)
+            comment = kwargs.get('comment')
+            
+            # Parse format_type to extract type name and parameters
+            # e.g., "character varying(30)" -> ("character varying", "30")
+            m = re.match(r'^\(?([^(]+?)(?:\(([^)]+)\))?\)?$', format_type)
+            if m:
+                coltype = m.group(1).strip()
+                args_str = m.group(2)
+            else:
+                coltype = format_type
+                args_str = None
+            
+            # Look up type class in ischema_names (includes Redshift types)
+            type_cls = self.ischema_names.get(coltype)
+            if type_cls:
+                # Instantiate type with parameters if present
+                if args_str:
+                    # Handle common cases: length, precision/scale
+                    args_parts = [p.strip() for p in args_str.split(',')]
+                    try:
+                        if len(args_parts) == 1:
+                            type_obj = type_cls(int(args_parts[0]))
+                        elif len(args_parts) == 2:
+                            type_obj = type_cls(int(args_parts[0]), int(args_parts[1]))
+                        else:
+                            type_obj = type_cls()
+                    except (ValueError, TypeError):
+                        type_obj = type_cls()
+                else:
+                    type_obj = type_cls()
+            else:
+                # Unknown type, use NullType
+                type_obj = NullType()
+            
+            # Build column_info dict matching SQLAlchemy's reflection interface
+            column_info = {
+                'name': name,
+                'type': type_obj,
+                'nullable': not notnull,
+                'default': default,
+            }
+            if comment:
+                column_info['comment'] = comment
+        else:
+            # SQLAlchemy 1.4: use parent's _get_column_info
+            if sa_version >= Version('1.3.16'):
+                # SQLAlchemy 1.3.16 introduced generated columns,
+                # not supported in redshift
+                kw['generated'] = ''
 
-        if sa_version < Version('1.4.0') and 'identity' in kw:
-            del kw['identity']
-        elif sa_version >= Version('1.4.0') and 'identity' not in kw:
-            kw['identity'] = None
+            if sa_version < Version('1.4.0') and 'identity' in kw:
+                del kw['identity']
+            elif sa_version >= Version('1.4.0') and 'identity' not in kw:
+                kw['identity'] = None
 
-        column_info = super(RedshiftDialectMixin, self)._get_column_info(
-            *args,
-            **kw
-        )
+            column_info = super(RedshiftDialectMixin, self)._get_column_info(
+                *args,
+                **kw
+            )
+        
+        # Common post-processing for both SA 1.4 and 2.0
         if isinstance(column_info['type'], VARCHAR):
             if column_info['type'].length is None:
                 column_info['type'] = NullType()
