@@ -205,11 +205,20 @@ def test_reflection(redshift_session, model, ddl):
     original_schema = table.schema
     if table.schema == 'public' and model.__table__.schema is None:
         table.schema = None
+        # Also strip 'public' schema from foreign key constraints
+        for fk in table.foreign_keys:
+            if hasattr(fk.column, 'table') and fk.column.table.schema == 'public':
+                fk.column.table.schema = None
     
     introspected_ddl = table_to_ddl(table, _dialect)
     
     # Restore schema
     table.schema = original_schema
+    if original_schema == 'public' and model.__table__.schema is None:
+        # Restore foreign key schemas
+        for fk in table.foreign_keys:
+            if hasattr(fk.column, 'table') and fk.column.table.schema is None:
+                fk.column.table.schema = 'public'
     
     assert utils.clean(introspected_ddl) == utils.clean(ddl)
 
