@@ -958,13 +958,6 @@ class RedshiftDialectMixin(DefaultDialect):
         # SA 2.0 expects a dict mapping (schema, table_name) to list of column dicts
         result = {}
         
-        # Get all tables in schema
-        if schema is None:
-            try:
-                schema = inspect(connection).default_schema_name
-            except Exception:
-                schema = 'public'
-        
         # If filter_names provided, only get those tables
         if filter_names:
             table_names = filter_names
@@ -975,6 +968,7 @@ class RedshiftDialectMixin(DefaultDialect):
         for table_name in table_names:
             try:
                 columns = self.get_columns(connection, table_name, schema=schema, **kw)
+                # Use the original schema parameter (which may be None) for the key
                 result[(schema, table_name)] = columns
             except Exception:
                 # Skip tables that fail (e.g., permission issues)
@@ -991,12 +985,6 @@ class RedshiftDialectMixin(DefaultDialect):
         """
         result = {}
         
-        if schema is None:
-            try:
-                schema = inspect(connection).default_schema_name
-            except Exception:
-                schema = 'public'
-        
         if filter_names:
             table_names = filter_names
         else:
@@ -1005,6 +993,7 @@ class RedshiftDialectMixin(DefaultDialect):
         for table_name in table_names:
             try:
                 pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
+                # Use the original schema parameter (which may be None) for the key
                 result[(schema, table_name)] = pk
             except Exception:
                 pass
@@ -1020,12 +1009,6 @@ class RedshiftDialectMixin(DefaultDialect):
         """
         result = {}
         
-        if schema is None:
-            try:
-                schema = inspect(connection).default_schema_name
-            except Exception:
-                schema = 'public'
-        
         if filter_names:
             table_names = filter_names
         else:
@@ -1034,6 +1017,7 @@ class RedshiftDialectMixin(DefaultDialect):
         for table_name in table_names:
             try:
                 constraints = self.get_unique_constraints(connection, table_name, schema=schema, **kw)
+                # Use the original schema parameter (which may be None) for the key
                 result[(schema, table_name)] = constraints
             except Exception:
                 pass
@@ -1048,18 +1032,13 @@ class RedshiftDialectMixin(DefaultDialect):
         """
         result = {}
         
-        if schema is None:
-            try:
-                schema = inspect(connection).default_schema_name
-            except Exception:
-                schema = 'public'
-        
         if filter_names:
             table_names = filter_names
         else:
             table_names = self.get_table_names(connection, schema=schema, **kw)
         
         for table_name in table_names:
+            # Use the original schema parameter (which may be None) for the key
             result[(schema, table_name)] = []
         
         return result
@@ -1498,7 +1477,10 @@ class RedshiftDialectMixin(DefaultDialect):
         """.format(schema_clause=schema_clause, table_clause=table_clause)))
         relations = {}
         for rel in result:
-            key = RelationKey(rel.relname, rel.schema, connection)
+            # When schema=None is passed, use None for the key instead of rel.schema
+            # This ensures the key matches what callers expect
+            key_schema = schema if schema is not None else None
+            key = RelationKey(rel.relname, key_schema, connection)
             relations[key] = rel
         return relations
 
@@ -1525,7 +1507,10 @@ class RedshiftDialectMixin(DefaultDialect):
         )))
 
         for col in result:
-            key = RelationKey(col.table_name, col.schema, connection)
+            # When schema=None is passed, use None for the key instead of col.schema
+            # This ensures the key matches what callers expect
+            key_schema = schema if schema is not None else None
+            key = RelationKey(col.table_name, key_schema, connection)
             all_columns[key].append(col)
 
         return dict(all_columns)
@@ -1584,7 +1569,10 @@ class RedshiftDialectMixin(DefaultDialect):
         """.format(schema_clause=schema_clause, table_clause=table_clause)))
         all_constraints = defaultdict(list)
         for con in result:
-            key = RelationKey(con.table_name, con.schema, connection)
+            # When schema=None is passed, use None for the key instead of con.schema
+            # This ensures the key matches what callers expect
+            key_schema = schema if schema is not None else None
+            key = RelationKey(con.table_name, key_schema, connection)
             all_constraints[key].append(con)
         return all_constraints
 
