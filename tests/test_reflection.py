@@ -10,6 +10,7 @@ from sqlalchemy_redshift.dialect import (
 )
 
 from rs_sqla_test_utils import models, utils
+from rs_sqla_test_utils.utils import is_sqlalchemy_2
 
 
 def table_to_ddl(table, _dialect):
@@ -183,23 +184,59 @@ def test_definition(model, ddl, stub_redshift_dialect):
 @pytest.mark.parametrize("model, ddl", models_and_ddls)
 def test_reflection(redshift_session, model, ddl):
     _dialect = redshift_session.bind.dialect
-    metadata = MetaData(bind=redshift_session.bind)
     schema = model.__table__.schema
-    table = Table(model.__tablename__, metadata,
-                  schema=schema, autoload=True)
+    
+    # If schema is None, explicitly use 'public' for Redshift
+    if schema is None:
+        schema = 'public'
+    
+    if is_sqlalchemy_2:
+        # SA 2.0: Create metadata without bind, use autoload_with
+        metadata = MetaData()
+        table = Table(model.__tablename__, metadata,
+                      schema=schema, autoload_with=redshift_session.bind)
+    else:
+        # SA 1.4: Use bind parameter
+        metadata = MetaData(bind=redshift_session.bind)
+        table = Table(model.__tablename__, metadata,
+                      schema=schema, autoload=True)
+    
+    # For comparison, temporarily remove schema if it's 'public' to match expected DDL
+    original_schema = table.schema
+    if table.schema == 'public' and model.__table__.schema is None:
+        table.schema = None
+    
     introspected_ddl = table_to_ddl(table, _dialect)
+    
+    # Restore schema
+    table.schema = original_schema
+    
     assert utils.clean(introspected_ddl) == utils.clean(ddl)
 
 
 def test_no_table_reflection(redshift_session):
-    metadata = MetaData(bind=redshift_session.bind)
-    with pytest.raises(NoSuchTableError):
-        Table('foobar', metadata, autoload=True)
+    if is_sqlalchemy_2:
+        # SA 2.0: Use autoload_with parameter
+        metadata = MetaData()
+        with pytest.raises(NoSuchTableError):
+            Table('foobar', metadata, autoload_with=redshift_session.bind)
+    else:
+        # SA 1.4: Use bind parameter
+        metadata = MetaData(bind=redshift_session.bind)
+        with pytest.raises(NoSuchTableError):
+            Table('foobar', metadata, autoload=True)
 
 
 def test_no_search_path_leak(redshift_session):
-    metadata = MetaData(bind=redshift_session.bind)
-    Table('basic', metadata, autoload=True)
+    if is_sqlalchemy_2:
+        # SA 2.0: Use autoload_with parameter
+        metadata = MetaData()
+        Table('basic', metadata, autoload_with=redshift_session.bind)
+    else:
+        # SA 1.4: Use bind parameter
+        metadata = MetaData(bind=redshift_session.bind)
+        Table('basic', metadata, autoload=True)
+    
     result = redshift_session.execute(sa.text("SHOW search_path"))
     search_path = result.scalar()
     assert 'other_schema' not in search_path

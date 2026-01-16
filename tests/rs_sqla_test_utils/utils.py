@@ -8,6 +8,7 @@ from sqlalchemy.engine import url as sa_url
 
 
 sa_version = Version(sa.__version__)
+is_sqlalchemy_2 = sa_version >= Version('2.0.0')
 
 
 def clean(query):
@@ -46,3 +47,22 @@ def make_mock_engine(name):
         return sa.create_engine(url_builder(
             drivername=name,
         ), strategy='mock', executor=None)
+
+
+def create_metadata_with_bind(bind):
+    """
+    Creates MetaData with bind in a version-compatible way.
+    
+    SA 1.4: MetaData(bind=engine) is deprecated but works
+    SA 2.0: MetaData(bind=engine) removed, use metadata.reflect(bind=engine)
+    
+    Returns MetaData instance ready for use.
+    """
+    from sqlalchemy import MetaData
+    
+    if sa_version >= Version('2.0.0'):
+        # SA 2.0: Create metadata without bind, caller must use reflect(bind=...)
+        return MetaData()
+    else:
+        # SA 1.4: Use bind parameter (deprecated but functional)
+        return MetaData(bind=bind)
