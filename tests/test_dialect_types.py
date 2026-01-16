@@ -3,6 +3,7 @@ import sqlalchemy_redshift.dialect
 import sqlalchemy
 from sqlalchemy.engine import reflection
 from sqlalchemy import MetaData
+from rs_sqla_test_utils.utils import is_sqlalchemy_2
 
 
 def test_defined_types():
@@ -165,16 +166,31 @@ redshift_specific_datatypes = [
 def test_custom_types_reflection_inspection(
         custom_datatype, redshift_engine
 ):
-    metadata = MetaData(bind=redshift_engine)
-    sqlalchemy.Table(
-        't1',
-        metadata,
-        sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
-        sqlalchemy.Column('name', sqlalchemy.String),
-        sqlalchemy.Column('test_col', custom_datatype),
-        schema='public'
-    )
-    metadata.create_all()
+    if is_sqlalchemy_2:
+        # SA 2.0: Create metadata without bind, use reflect
+        metadata = MetaData()
+        sqlalchemy.Table(
+            't1',
+            metadata,
+            sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
+            sqlalchemy.Column('name', sqlalchemy.String),
+            sqlalchemy.Column('test_col', custom_datatype),
+            schema='public'
+        )
+        metadata.create_all(bind=redshift_engine)
+    else:
+        # SA 1.4: Use bind parameter (deprecated but functional)
+        metadata = MetaData(bind=redshift_engine)
+        sqlalchemy.Table(
+            't1',
+            metadata,
+            sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
+            sqlalchemy.Column('name', sqlalchemy.String),
+            sqlalchemy.Column('test_col', custom_datatype),
+            schema='public'
+        )
+        metadata.create_all()
+    
     inspect = reflection.Inspector.from_engine(redshift_engine)
 
     actual = inspect.get_columns(table_name='t1', schema='public')
