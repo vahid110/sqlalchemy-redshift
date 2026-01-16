@@ -66,3 +66,4 @@ config.ini
 tests/redshift_test.ini
 
 # Existing gitignore content would be preserved
+.venv
