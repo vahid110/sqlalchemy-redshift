@@ -121,6 +121,15 @@
   - [ ] Write troubleshooting guide
   - [ ] Add docstrings to all public methods
 
+- [ ] **SQLAlchemy Test Suite Integration** ⭐ HIGH PRIORITY
+  - [ ] Create `tests/sqlalchemy_test_suite/` directory
+  - [ ] Create `requirements.py` to document exclusions
+  - [ ] Create `test_suite.py` to run official compliance tests
+  - [ ] Create `conftest.py` for test configuration
+  - [ ] Run and validate SQLAlchemy's official test suite
+  - [ ] Document what's supported vs not supported
+  - **See**: `SNOWFLAKE_COMPARISON_FINAL.md` for implementation guide
+
 ## Quality Assurance Checklist
 
 ### Code Quality
