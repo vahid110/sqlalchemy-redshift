@@ -1,0 +1,952 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift
+configfile: tox.ini
+plugins: cov-7.0.0
+collecting ... collected 677 items
+
+tests/test_abstime_interval_types.py::TestAbstimeType::test_abstime_type_available PASSED [  0%]
+tests/test_abstime_interval_types.py::TestAbstimeType::test_abstime_type_properties PASSED [  0%]
+tests/test_abstime_interval_types.py::TestAbstimeType::test_abstime_type_compilation PASSED [  0%]
+tests/test_abstime_interval_types.py::TestAbstimeType::test_abstime_in_ischema_names PASSED [  0%]
+tests/test_abstime_interval_types.py::TestAbstimeType::test_abstime_ddl_generation PASSED [  0%]
+tests/test_abstime_interval_types.py::TestIntervalType::test_interval_type_available PASSED [  0%]
+tests/test_abstime_interval_types.py::TestIntervalType::test_interval_type_properties PASSED [  1%]
+tests/test_abstime_interval_types.py::TestIntervalType::test_interval_type_compilation PASSED [  1%]
+tests/test_abstime_interval_types.py::TestIntervalType::test_interval_in_ischema_names PASSED [  1%]
+tests/test_abstime_interval_types.py::TestIntervalType::test_interval_ddl_generation PASSED [  1%]
+tests/test_abstime_interval_types.py::TestAbstimeIntervalIntegration::test_both_types_in_same_table PASSED [  1%]
+tests/test_alembic_dialect.py::test_configure_migration_context PASSED   [  1%]
+tests/test_alembic_dialect.py::test_rename_table[redshift+psycopg2] PASSED [  1%]
+tests/test_alembic_dialect.py::test_alter_column_comment[redshift+psycopg2] PASSED [  2%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2-kwargs0-ALTER TABLE trg APPEND FROM src] PASSED [  2%]
+tests/test_compiler.py::test_func_now[redshift+psycopg2] PASSED          [  2%]
+tests/test_compiler.py::test_redshift_functions[redshift+psycopg2] PASSED [  2%]
+tests/test_compiler.py::test_json_functions[redshift+psycopg2] PASSED    [  2%]
+tests/test_compiler.py::test_string_functions[redshift+psycopg2] PASSED  [  2%]
+tests/test_compiler.py::test_window_functions[redshift+psycopg2] PASSED  [  2%]
+tests/test_compiler.py::test_aggregate_functions[redshift+psycopg2] PASSED [  3%]
+tests/test_compiler.py::test_operators[redshift+psycopg2] PASSED         [  3%]
+tests/test_compiler.py::test_case_expressions[redshift+psycopg2] PASSED  [  3%]
+tests/test_compiler.py::test_cast_expressions[redshift+psycopg2] PASSED  [  3%]
+tests/test_compiler.py::test_boolean_expressions[redshift+psycopg2] PASSED [  3%]
+tests/test_compiler.py::test_subquery_expressions[redshift+psycopg2] PASSED [  3%]
+tests/test_compiler.py::test_limit_offset_compilation[redshift+psycopg2] PASSED [  3%]
+tests/test_compiler.py::test_parameter_binding[redshift+psycopg2] PASSED [  4%]
+tests/test_compiler.py::test_redshift_specific_syntax[redshift+psycopg2] PASSED [  4%]
+tests/test_constraint_names.py::test_pk_name[redshift+psycopg2] PASSED   [  4%]
+tests/test_constraint_names.py::test_fk_name[redshift+psycopg2] PASSED   [  4%]
+tests/test_copy_command.py::test_basic_copy_case[redshift+psycopg2] PASSED [  4%]
+tests/test_copy_command.py::test_iam_role[redshift+psycopg2] PASSED      [  4%]
+tests/test_copy_command.py::test_iam_role_partition[redshift+psycopg2] PASSED [  5%]
+tests/test_copy_command.py::test_iam_role_arns_list[redshift+psycopg2] PASSED [  5%]
+tests/test_copy_command.py::test_iam_role_arns_single[redshift+psycopg2] PASSED [  5%]
+tests/test_copy_command.py::test_format[redshift+psycopg2] PASSED        [  5%]
+tests/test_copy_command.py::test_format__columnar[redshift+psycopg2-Format.orc] PASSED [  5%]
+tests/test_copy_command.py::test_fixed_width_format_without_widths[redshift+psycopg2] PASSED [  5%]
+tests/test_copy_command.py::test_compression[redshift+psycopg2] PASSED   [  5%]
+tests/test_copy_command.py::test_ascii_nul_as_redshift_null[redshift+psycopg2] PASSED [  6%]
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2] PASSED [  6%]
+tests/test_copy_command.py::test_stat_update_maxerror_and_escape[redshift+psycopg2] PASSED [  6%]
+tests/test_create_library.py::test_basic[redshift+psycopg2] PASSED       [  6%]
+tests/test_create_library.py::test_or_replace[redshift+psycopg2] PASSED  [  6%]
+tests/test_create_library.py::test_region[redshift+psycopg2] PASSED      [  6%]
+tests/test_create_library.py::test_everything[redshift+psycopg2] PASSED  [  6%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_simple[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_identity[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_diststyle[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_invalid_diststyle[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_distkey[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_sortkey[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_unicode_sortkey[redshift+psycopg2] PASSED [  7%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_multiple_sortkeys[redshift+psycopg2] PASSED [  8%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_all_together[redshift+psycopg2] PASSED [  8%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_sortkey[redshift+psycopg2] PASSED [  8%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_distkey[redshift+psycopg2] PASSED [  8%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_encoding[redshift+psycopg2] PASSED [  8%]
+tests/test_default_ssl.py::test_ssl_args[redshift+psycopg2] PASSED       [  8%]
+tests/test_delete_stmt.py::test_delete_stmt_nowhereclause[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_simplewhereclause1[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_simplewhereclause2[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_joinedwhereclause1[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_joinedwhereclause2[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_subqueryplusjoin[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_subquery[redshift+psycopg2] PASSED [  9%]
+tests/test_delete_stmt.py::test_delete_stmt_on_subquerycomma[redshift+psycopg2] PASSED [ 10%]
+tests/test_delete_stmt.py::test_delete_on_comma[redshift+psycopg2] PASSED [ 10%]
+tests/test_delete_stmt.py::test_delete_stmt_on_alias[redshift+psycopg2] PASSED [ 10%]
+tests/test_delete_stmt.py::test_delete_stmt_with_comma_subquery_alias_join[redshift+psycopg2] PASSED [ 10%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2-GEOMETRY-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col GEOMETRY, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 10%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-GEOMETRY] PASSED [ 10%]
+tests/test_get_table_attributes.py::test_table_attributes_empty[redshift+psycopg2] PASSED [ 10%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key[redshift+psycopg2-a_key] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2-b_key] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes__one_sort_key[redshift+psycopg2-b_key] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key[redshift+psycopg2-sortkey0] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_key_interleaved[redshift+psycopg2-b_key] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key_interleaved[redshift+psycopg2-sortkey0] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_one_interleaved_raises[redshift+psycopg2] PASSED [ 11%]
+tests/test_get_table_attributes.py::test_dist_key_with_key_diststyle[redshift+psycopg2] PASSED [ 12%]
+tests/test_get_table_attributes.py::test_no_distkey_with_key_diststyle[redshift+psycopg2] PASSED [ 12%]
+tests/test_get_table_attributes.py::test_distkey_with_other_diststyles[redshift+psycopg2] PASSED [ 12%]
+tests/test_get_table_attributes.py::test_all_diststyle[redshift+psycopg2] PASSED [ 12%]
+tests/test_get_table_attributes.py::test_even_diststyle[redshift+psycopg2] PASSED [ 12%]
+tests/test_get_table_attributes.py::test_bad_diststyle[redshift+psycopg2] PASSED [ 12%]
+tests/test_long_tablename.py::test_long_tablename[redshift+psycopg2] PASSED [ 12%]
+tests/test_materialized_views.py::test_basic_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_no_backup_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_diststyle_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_distkey_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_sortkey_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_interleaved_sortkey_materialized_view[redshift+psycopg2] PASSED [ 13%]
+tests/test_materialized_views.py::test_drop_materialized_view[redshift+psycopg2] PASSED [ 14%]
+tests/test_materialized_views.py::test_drop_materialized_view_if_exists[redshift+psycopg2] PASSED [ 14%]
+tests/test_materialized_views.py::test_drop_materialized_view_cascade[redshift+psycopg2] PASSED [ 14%]
+tests/test_materialized_views.py::test_refresh_materialized_view[redshift+psycopg2] PASSED [ 14%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ] PASSED [ 14%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ] PASSED [ 14%]
+tests/test_reflection.py::test_no_table_reflection[redshift+psycopg2] PASSED [ 14%]
+tests/test_reflection.py::test_no_search_path_leak[redshift+psycopg2] PASSED [ 15%]
+tests/test_reflection.py::test_external_table_reflection[redshift+psycopg2] FAILED [ 15%]
+tests/test_reflection_views.py::test_view_reflection[redshift+psycopg2] FAILED [ 15%]
+tests/test_reflection_views.py::test_late_binding_view_reflection[redshift+psycopg2] FAILED [ 15%]
+tests/test_simple_query.py::test_simple_query[redshift+psycopg2] PASSED  [ 15%]
+tests/test_unload_from_select.py::test_basic_unload_case[redshift+psycopg2] PASSED [ 15%]
+tests/test_unload_from_select.py::test_iam_role[redshift+psycopg2] PASSED [ 15%]
+tests/test_unload_from_select.py::test_iam_role_partition[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_iam_role_arns_list[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_iam_role_arns_single[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_all_redshift_options[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_all_redshift_options_with_header[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_csv_format__basic[redshift+psycopg2] PASSED [ 16%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2-\t-None] PASSED [ 16%]
+tests/test_unload_from_select.py::test_parquet_format__basic[redshift+psycopg2] PASSED [ 17%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs0] PASSED [ 17%]
+tests/test_alembic_dialect.py::test_rename_table[redshift+psycopg2cffi] PASSED [ 17%]
+tests/test_alembic_dialect.py::test_alter_column_comment[redshift+psycopg2cffi] PASSED [ 17%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2-kwargs1-ALTER TABLE trg APPEND FROM src FILLTARGET] PASSED [ 17%]
+tests/test_compiler.py::test_func_now[redshift+psycopg2cffi] PASSED      [ 17%]
+tests/test_compiler.py::test_redshift_functions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_json_functions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_string_functions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_window_functions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_aggregate_functions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_operators[redshift+psycopg2cffi] PASSED     [ 18%]
+tests/test_compiler.py::test_case_expressions[redshift+psycopg2cffi] PASSED [ 18%]
+tests/test_compiler.py::test_cast_expressions[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_compiler.py::test_boolean_expressions[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_compiler.py::test_subquery_expressions[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_compiler.py::test_limit_offset_compilation[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_compiler.py::test_parameter_binding[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_compiler.py::test_redshift_specific_syntax[redshift+psycopg2cffi] PASSED [ 19%]
+tests/test_constraint_names.py::test_pk_name[redshift+psycopg2cffi] ERROR [ 19%]
+tests/test_constraint_names.py::test_fk_name[redshift+psycopg2cffi] ERROR [ 20%]
+tests/test_copy_command.py::test_basic_copy_case[redshift+psycopg2cffi] PASSED [ 20%]
+tests/test_copy_command.py::test_iam_role[redshift+psycopg2cffi] PASSED  [ 20%]
+tests/test_copy_command.py::test_iam_role_partition[redshift+psycopg2cffi] PASSED [ 20%]
+tests/test_copy_command.py::test_iam_role_arns_list[redshift+psycopg2cffi] PASSED [ 20%]
+tests/test_copy_command.py::test_iam_role_arns_single[redshift+psycopg2cffi] PASSED [ 20%]
+tests/test_copy_command.py::test_format[redshift+psycopg2cffi] PASSED    [ 20%]
+tests/test_copy_command.py::test_format__columnar[redshift+psycopg2-Format.parquet] PASSED [ 21%]
+tests/test_copy_command.py::test_fixed_width_format_without_widths[redshift+psycopg2cffi] PASSED [ 21%]
+tests/test_copy_command.py::test_compression[redshift+psycopg2cffi] PASSED [ 21%]
+tests/test_copy_command.py::test_ascii_nul_as_redshift_null[redshift+psycopg2cffi] PASSED [ 21%]
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2cffi] PASSED [ 21%]
+tests/test_copy_command.py::test_stat_update_maxerror_and_escape[redshift+psycopg2cffi] PASSED [ 21%]
+tests/test_create_library.py::test_basic[redshift+psycopg2cffi] PASSED   [ 22%]
+tests/test_create_library.py::test_or_replace[redshift+psycopg2cffi] PASSED [ 22%]
+tests/test_create_library.py::test_region[redshift+psycopg2cffi] PASSED  [ 22%]
+tests/test_create_library.py::test_everything[redshift+psycopg2cffi] PASSED [ 22%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_simple[redshift+psycopg2cffi] PASSED [ 22%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_identity[redshift+psycopg2cffi] PASSED [ 22%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_diststyle[redshift+psycopg2cffi] PASSED [ 22%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_invalid_diststyle[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_distkey[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_sortkey[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_unicode_sortkey[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_with_multiple_sortkeys[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_table_all_together[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_sortkey[redshift+psycopg2cffi] PASSED [ 23%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_distkey[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_ddl_compiler.py::TestDDLCompiler::test_create_column_with_encoding[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_default_ssl.py::test_ssl_args[redshift+psycopg2cffi] FAILED   [ 24%]
+tests/test_delete_stmt.py::test_delete_stmt_nowhereclause[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_delete_stmt.py::test_delete_stmt_simplewhereclause1[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_delete_stmt.py::test_delete_stmt_simplewhereclause2[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_delete_stmt.py::test_delete_stmt_joinedwhereclause1[redshift+psycopg2cffi] PASSED [ 24%]
+tests/test_delete_stmt.py::test_delete_stmt_joinedwhereclause2[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_stmt_subqueryplusjoin[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_stmt_subquery[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_stmt_on_subquerycomma[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_on_comma[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_stmt_on_alias[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_delete_stmt.py::test_delete_stmt_with_comma_subquery_alias_join[redshift+psycopg2cffi] PASSED [ 25%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2-SUPER-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col SUPER, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 26%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-SUPER] PASSED [ 26%]
+tests/test_get_table_attributes.py::test_table_attributes_empty[redshift+psycopg2cffi] PASSED [ 26%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key[redshift+psycopg2-distkey1] PASSED [ 26%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2-sortkey1] PASSED [ 26%]
+tests/test_get_table_attributes.py::test_table_attributes__one_sort_key[redshift+psycopg2-sortkey1] PASSED [ 26%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key[redshift+psycopg2-sortkey1] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_key_interleaved[redshift+psycopg2-sortkey1] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key_interleaved[redshift+psycopg2-sortkey1] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_one_interleaved_raises[redshift+psycopg2cffi] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_dist_key_with_key_diststyle[redshift+psycopg2cffi] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_no_distkey_with_key_diststyle[redshift+psycopg2cffi] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_distkey_with_other_diststyles[redshift+psycopg2cffi] PASSED [ 27%]
+tests/test_get_table_attributes.py::test_all_diststyle[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_get_table_attributes.py::test_even_diststyle[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_get_table_attributes.py::test_bad_diststyle[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_long_tablename.py::test_long_tablename[redshift+psycopg2cffi] ERROR [ 28%]
+tests/test_materialized_views.py::test_basic_materialized_view[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_materialized_views.py::test_no_backup_materialized_view[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_materialized_views.py::test_diststyle_materialized_view[redshift+psycopg2cffi] PASSED [ 28%]
+tests/test_materialized_views.py::test_distkey_materialized_view[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_sortkey_materialized_view[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_interleaved_sortkey_materialized_view[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_drop_materialized_view[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_drop_materialized_view_if_exists[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_drop_materialized_view_cascade[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_materialized_views.py::test_refresh_materialized_view[redshift+psycopg2cffi] PASSED [ 29%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ] PASSED [ 30%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ] PASSED [ 30%]
+tests/test_reflection.py::test_no_table_reflection[redshift+psycopg2cffi] ERROR [ 30%]
+tests/test_reflection.py::test_no_search_path_leak[redshift+psycopg2cffi] ERROR [ 30%]
+tests/test_reflection.py::test_external_table_reflection[redshift+psycopg2cffi] ERROR [ 30%]
+tests/test_reflection_views.py::test_view_reflection[redshift+psycopg2cffi] ERROR [ 30%]
+tests/test_reflection_views.py::test_late_binding_view_reflection[redshift+psycopg2cffi] ERROR [ 31%]
+tests/test_simple_query.py::test_simple_query[redshift+psycopg2cffi] ERROR [ 31%]
+tests/test_unload_from_select.py::test_basic_unload_case[redshift+psycopg2cffi] PASSED [ 31%]
+tests/test_unload_from_select.py::test_iam_role[redshift+psycopg2cffi] PASSED [ 31%]
+tests/test_unload_from_select.py::test_iam_role_partition[redshift+psycopg2cffi] PASSED [ 31%]
+tests/test_unload_from_select.py::test_iam_role_arns_list[redshift+psycopg2cffi] PASSED [ 31%]
+tests/test_unload_from_select.py::test_iam_role_arns_single[redshift+psycopg2cffi] PASSED [ 31%]
+tests/test_unload_from_select.py::test_all_redshift_options[redshift+psycopg2cffi] PASSED [ 32%]
+tests/test_unload_from_select.py::test_all_redshift_options_with_header[redshift+psycopg2cffi] PASSED [ 32%]
+tests/test_unload_from_select.py::test_csv_format__basic[redshift+psycopg2cffi] PASSED [ 32%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2-None-id:8,name:32] PASSED [ 32%]
+tests/test_unload_from_select.py::test_parquet_format__basic[redshift+psycopg2cffi] PASSED [ 32%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs1] PASSED [ 32%]
+tests/test_alembic_integration.py::test_alembic_migration_context PASSED [ 32%]
+tests/test_alembic_integration.py::test_alembic_redshift_ddl_compilation PASSED [ 33%]
+tests/test_alembic_integration.py::test_alembic_version_compatibility PASSED [ 33%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2-kwargs2-ALTER TABLE trg APPEND FROM src IGNOREEXTRA] PASSED [ 33%]
+tests/test_copy_command.py::test_format__columnar[redshift+psycopg2cffi-Format.orc] PASSED [ 33%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2-TIMESTAMPTZ-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col TIMESTAMPTZ, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 33%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-TIMETZ] PASSED [ 33%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key[redshift+psycopg2cffi-a_key] PASSED [ 33%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2-sortkey2] PASSED [ 34%]
+tests/test_get_table_attributes.py::test_table_attributes__one_sort_key[redshift+psycopg2cffi-b_key] PASSED [ 34%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key[redshift+psycopg2cffi-sortkey0] PASSED [ 34%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_key_interleaved[redshift+psycopg2cffi-b_key] PASSED [ 34%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key_interleaved[redshift+psycopg2cffi-sortkey0] PASSED [ 34%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ] PASSED [ 34%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ] PASSED [ 35%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2-;-id:8,name:32] PASSED [ 35%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs2] PASSED [ 35%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2cffi-kwargs0-ALTER TABLE trg APPEND FROM src] PASSED [ 35%]
+tests/test_copy_command.py::test_format__columnar[redshift+psycopg2cffi-Format.parquet] PASSED [ 35%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2-TIMETZ-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col TIMETZ, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 35%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-TIMESTAMPTZ] PASSED [ 35%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key[redshift+psycopg2cffi-distkey1] PASSED [ 36%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2cffi-b_key] PASSED [ 36%]
+tests/test_get_table_attributes.py::test_table_attributes__one_sort_key[redshift+psycopg2cffi-sortkey1] PASSED [ 36%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key[redshift+psycopg2cffi-sortkey1] PASSED [ 36%]
+tests/test_get_table_attributes.py::test_table_attributes_one_sort_key_interleaved[redshift+psycopg2cffi-sortkey1] PASSED [ 36%]
+tests/test_get_table_attributes.py::test_table_attributes_two_sort_key_interleaved[redshift+psycopg2cffi-sortkey1] PASSED [ 36%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ] PASSED [ 36%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ] PASSED [ 37%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2cffi-\t-None] PASSED [ 37%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs3] PASSED [ 37%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2cffi-kwargs1-ALTER TABLE trg APPEND FROM src FILLTARGET] PASSED [ 37%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2-HLLSKETCH-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col HLLSKETCH, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 37%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-HLLSKETCH] PASSED [ 37%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2cffi-sortkey1] PASSED [ 37%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 38%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 38%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2cffi-None-id:8,name:32] PASSED [ 38%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs4] PASSED [ 38%]
+tests/test_alter_table.py::test_append__basic[redshift+psycopg2cffi-kwargs2-ALTER TABLE trg APPEND FROM src IGNOREEXTRA] PASSED [ 38%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2cffi-GEOMETRY-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col GEOMETRY, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 38%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-GEOMETRY] ERROR [ 38%]
+tests/test_get_table_attributes.py::test_table_attributes_dist_key_one_sort_key[redshift+psycopg2cffi-sortkey2] PASSED [ 39%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 39%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 39%]
+tests/test_unload_from_select.py::test_csv_format__bad_options_crash[redshift+psycopg2cffi-;-id:8,name:32] PASSED [ 39%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2-kwargs5] PASSED [ 39%]
+tests/test_alter_table.py::test_append__ignoreextra_and_filltarget PASSED [ 39%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_type_available PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_type_creation PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_inheritance PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_bind_processor PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_result_processor PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_ddl_generation PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_with_dimensions PASSED [ 40%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_performance_optimization PASSED [ 41%]
+tests/test_array_types.py::TestRedshiftArrayType::test_redshift_array_nested_types PASSED [ 41%]
+tests/test_array_types.py::TestRedshiftArrayIntegration::test_array_with_other_types PASSED [ 41%]
+tests/test_array_types.py::TestRedshiftArrayIntegration::test_multiple_array_columns PASSED [ 41%]
+tests/test_authentication_system.py::TestAuthenticationParsing::test_parse_auth_params_basic PASSED [ 41%]
+tests/test_authentication_system.py::TestAuthenticationParsing::test_parse_auth_params_iam PASSED [ 41%]
+tests/test_authentication_system.py::TestAuthenticationParsing::test_credential_redaction PASSED [ 41%]
+tests/test_authentication_system.py::TestAuthenticationHelpers::test_authentication_helper_functions PASSED [ 42%]
+tests/test_authentication_system.py::TestDialectAuthenticationIntegration::test_dialect_authentication_integration PASSED [ 42%]
+tests/test_authentication_system.py::TestDialectAuthenticationIntegration::test_create_connect_args_method PASSED [ 42%]
+tests/test_bulk_insert_validation.py::test_use_insertmanyvalues_flag PASSED [ 42%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_with_nulls PASSED [ 42%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_with_json_super PASSED [ 42%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_with_arrays PASSED [ 42%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_with_identity_columns PASSED [ 43%]
+tests/test_bulk_insert_validation.py::test_no_returning_assumption PASSED [ 43%]
+tests/test_bulk_insert_validation.py::test_orm_bulk_operations PASSED    [ 43%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_performance_flags PASSED [ 43%]
+tests/test_bulk_insert_validation.py::test_bulk_insert_with_defaults PASSED [ 43%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_use_insertmanyvalues_flag_enabled[RedshiftDialect_psycopg2] PASSED [ 43%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_use_insertmanyvalues_flag_enabled[RedshiftDialect_psycopg2cffi] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_use_insertmanyvalues_flag_enabled[RedshiftDialect_redshift_connector] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_core_compilation[RedshiftDialect_psycopg2] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_core_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_core_compilation[RedshiftDialect_redshift_connector] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_with_nulls_and_defaults[RedshiftDialect_psycopg2] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_with_nulls_and_defaults[RedshiftDialect_psycopg2cffi] PASSED [ 44%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_bulk_insert_with_nulls_and_defaults[RedshiftDialect_redshift_connector] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_large_bulk_insert_compilation[RedshiftDialect_psycopg2] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_large_bulk_insert_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_large_bulk_insert_compilation[RedshiftDialect_redshift_connector] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_insert_returning_disabled[RedshiftDialect_psycopg2] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_insert_returning_disabled[RedshiftDialect_psycopg2cffi] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertManyValues::test_insert_returning_disabled[RedshiftDialect_redshift_connector] PASSED [ 45%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_bulk_insert_api_compatibility[1.4-RedshiftDialect_psycopg2] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_bulk_insert_api_compatibility[1.4-RedshiftDialect_redshift_connector] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_bulk_insert_api_compatibility[2.0-RedshiftDialect_psycopg2] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_bulk_insert_api_compatibility[2.0-RedshiftDialect_redshift_connector] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_orm_bulk_insert_compatibility[1.4-RedshiftDialect_psycopg2] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_orm_bulk_insert_compatibility[1.4-RedshiftDialect_redshift_connector] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_orm_bulk_insert_compatibility[2.0-RedshiftDialect_psycopg2] PASSED [ 46%]
+tests/test_bulk_insertmanyvalues.py::TestBulkInsertSAVersions::test_orm_bulk_insert_compatibility[2.0-RedshiftDialect_redshift_connector] PASSED [ 47%]
+tests/test_column_loading.py::TestColumnReflection::test_varchar_as_nulltype PASSED [ 47%]
+tests/test_compiler.py::TestCompilerDriverParity::test_offset_only_limit_all_all_drivers[RedshiftDialect_psycopg2] PASSED [ 47%]
+tests/test_compiler.py::TestCompilerDriverParity::test_offset_only_limit_all_all_drivers[RedshiftDialect_psycopg2cffi] PASSED [ 47%]
+tests/test_compiler.py::TestCompilerDriverParity::test_offset_only_limit_all_all_drivers[RedshiftDialect_redshift_connector] PASSED [ 47%]
+tests/test_compiler.py::TestCompilerDriverParity::test_limit_with_offset_all_drivers[RedshiftDialect_psycopg2] PASSED [ 47%]
+tests/test_compiler.py::TestCompilerDriverParity::test_limit_with_offset_all_drivers[RedshiftDialect_psycopg2cffi] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_limit_with_offset_all_drivers[RedshiftDialect_redshift_connector] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_basic_select_compilation[RedshiftDialect_psycopg2] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_basic_select_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_basic_select_compilation[RedshiftDialect_redshift_connector] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_join_compilation[RedshiftDialect_psycopg2] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_join_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 48%]
+tests/test_compiler.py::TestCompilerDriverParity::test_join_compilation[RedshiftDialect_redshift_connector] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_subquery_compilation[RedshiftDialect_psycopg2] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_subquery_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_subquery_compilation[RedshiftDialect_redshift_connector] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_parameter_style_consistency[RedshiftDialect_psycopg2] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_parameter_style_consistency[RedshiftDialect_psycopg2cffi] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_parameter_style_consistency[RedshiftDialect_redshift_connector] PASSED [ 49%]
+tests/test_compiler.py::TestCompilerDriverParity::test_function_compilation_consistency[RedshiftDialect_psycopg2] PASSED [ 50%]
+tests/test_compiler.py::TestCompilerDriverParity::test_function_compilation_consistency[RedshiftDialect_psycopg2cffi] PASSED [ 50%]
+tests/test_compiler.py::TestCompilerDriverParity::test_function_compilation_consistency[RedshiftDialect_redshift_connector] PASSED [ 50%]
+tests/test_compiler.py::TestCompilerDriverParity::test_delete_using_compilation[RedshiftDialect_psycopg2] PASSED [ 50%]
+tests/test_compiler.py::TestCompilerDriverParity::test_delete_using_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 50%]
+tests/test_compiler.py::TestCompilerDriverParity::test_delete_using_compilation[RedshiftDialect_redshift_connector] PASSED [ 50%]
+tests/test_copy_command.py::test_iam_role_partition_validation PASSED    [ 50%]
+tests/test_copy_command.py::test_invalid_format PASSED                   [ 51%]
+tests/test_copy_command.py::test_invalid_compression PASSED              [ 51%]
+tests/test_copy_command.py::test_different_tables PASSED                 [ 51%]
+tests/test_copy_command.py::test_legacy_string_format PASSED             [ 51%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_requires_autocommit_success[RedshiftDialect_psycopg2] PASSED [ 51%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_requires_autocommit_success[RedshiftDialect_psycopg2cffi] PASSED [ 51%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_requires_autocommit_success[RedshiftDialect_redshift_connector] PASSED [ 51%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_unload_requires_autocommit_success[RedshiftDialect_psycopg2] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_unload_requires_autocommit_success[RedshiftDialect_psycopg2cffi] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_unload_requires_autocommit_success[RedshiftDialect_redshift_connector] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_unload_isolation_level_requirement[RedshiftDialect_psycopg2] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_unload_isolation_level_requirement[RedshiftDialect_psycopg2cffi] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadAutocommit::test_copy_unload_isolation_level_requirement[RedshiftDialect_redshift_connector] PASSED [ 52%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadDocumentation::test_copy_usage_pattern PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestCopyUnloadDocumentation::test_unload_usage_pattern PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_bulk_operations_support_autocommit[RedshiftDialect_psycopg2] PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_bulk_operations_support_autocommit[RedshiftDialect_psycopg2cffi] PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_bulk_operations_support_autocommit[RedshiftDialect_redshift_connector] PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_read_committed_default[RedshiftDialect_psycopg2] PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_read_committed_default[RedshiftDialect_psycopg2cffi] PASSED [ 53%]
+tests/test_copy_unload_autocommit.py::TestBulkOperationIsolationLevels::test_read_committed_default[RedshiftDialect_redshift_connector] PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestSQLAlchemyVersionCompatibility::test_current_sqlalchemy_version_support PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestSQLAlchemyVersionCompatibility::test_dialect_capability_flags PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestSQLAlchemyVersionCompatibility::test_reflection_interface_compatibility PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestSQLAlchemyVersionCompatibility::test_compiler_interface_compatibility PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestSQLAlchemyVersionCompatibility::test_connection_interface_compatibility PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestFeatureDetection::test_insert_returning_detection PASSED [ 54%]
+tests/test_dialect_feature_compatibility.py::TestFeatureDetection::test_statement_cache_detection PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestFeatureDetection::test_pool_configuration_detection PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestFeatureDetection::test_error_handling_capabilities PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestTypeSystemCompatibility::test_type_compilation_interface PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestTypeSystemCompatibility::test_type_registry_compatibility PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestTypeSystemCompatibility::test_array_type_compatibility PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestTypeSystemCompatibility::test_bind_result_processor_interface PASSED [ 55%]
+tests/test_dialect_feature_compatibility.py::TestDialectRegistration::test_dialect_can_be_loaded PASSED [ 56%]
+tests/test_dialect_feature_compatibility.py::TestDialectRegistration::test_engine_creation_compatibility PASSED [ 56%]
+tests/test_dialect_feature_compatibility.py::TestFutureCompatibility::test_dialect_uses_standard_interfaces PASSED [ 56%]
+tests/test_dialect_feature_compatibility.py::TestFutureCompatibility::test_type_system_uses_standard_patterns PASSED [ 56%]
+tests/test_dialect_feature_compatibility.py::TestFutureCompatibility::test_error_handling_uses_standard_patterns PASSED [ 56%]
+tests/test_dialect_types.py::test_defined_types PASSED                   [ 56%]
+tests/test_dialect_types.py::test_custom_types_extend_super_type[GEOMETRY-TEXT] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_extend_super_type[SUPER-TEXT] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_extend_super_type[TIMESTAMP-TIMESTAMP] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_extend_super_type[TIMETZ-TIME] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_extend_super_type[HLLSKETCH-TEXT] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2cffi-SUPER-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col SUPER, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 57%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-SUPER] ERROR [ 57%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 58%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 58%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs0] PASSED [ 58%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2cffi-TIMESTAMPTZ-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col TIMESTAMPTZ, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 58%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMETZ] ERROR [ 58%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 58%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] FAILED [ 58%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs1] PASSED [ 59%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2cffi-TIMETZ-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col TIMETZ, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 59%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMESTAMPTZ] ERROR [ 59%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 59%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] FAILED [ 59%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs2] PASSED [ 59%]
+tests/test_dialect_types.py::test_custom_types_ddl_generation[redshift+psycopg2cffi-HLLSKETCH-\nCREATE TABLE t1 (\n\tid INTEGER NOT NULL, \n\tname VARCHAR, \n\ttest_col HLLSKETCH, \n\tPRIMARY KEY (id)\n)\n\n] PASSED [ 59%]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-HLLSKETCH] ERROR [ 60%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 60%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 60%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs3] PASSED [ 60%]
+tests/test_dialect_types.py::test_custom_type_compilation[GEOMETRY] PASSED [ 60%]
+tests/test_dialect_types.py::test_custom_type_compilation[SUPER] PASSED  [ 60%]
+tests/test_dialect_types.py::test_custom_type_compilation[TIMETZ] PASSED [ 61%]
+tests/test_dialect_types.py::test_custom_type_compilation[TIMESTAMPTZ] PASSED [ 61%]
+tests/test_dialect_types.py::test_custom_type_compilation[HLLSKETCH] PASSED [ 61%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_basic_type_compilation[RedshiftDialect_psycopg2] PASSED [ 61%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_basic_type_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 61%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_basic_type_compilation[RedshiftDialect_redshift_connector] PASSED [ 61%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_standard_type_compilation[RedshiftDialect_psycopg2] PASSED [ 61%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_standard_type_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 62%]
+tests/test_dialect_types.py::TestTypeCorrectness::test_standard_type_compilation[RedshiftDialect_redshift_connector] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_sqlalchemy_dialect[redshift-PGDialect_psycopg2] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_sqlalchemy_dialect[redshift+psycopg2-PGDialect_psycopg2] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_sqlalchemy_dialect[redshift+psycopg2cffi-PGDialect_psycopg2cffi] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_sqlalchemy_dialect[redshift+redshift_connector-PGDialect] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_redshift_mixin[redshift-Psycopg2RedshiftDialectMixin] PASSED [ 62%]
+tests/test_dialects.py::test_dialect_inherits_from_redshift_mixin[redshift+psycopg2-Psycopg2RedshiftDialectMixin] PASSED [ 63%]
+tests/test_dialects.py::test_dialect_inherits_from_redshift_mixin[redshift+psycopg2cffi-Psycopg2RedshiftDialectMixin] PASSED [ 63%]
+tests/test_dialects.py::test_dialect_registered_correct_class[redshift-RedshiftDialect_psycopg2] PASSED [ 63%]
+tests/test_dialects.py::test_dialect_registered_correct_class[redshift+psycopg2-RedshiftDialect_psycopg2] PASSED [ 63%]
+tests/test_dialects.py::test_dialect_registered_correct_class[redshift+psycopg2cffi-RedshiftDialect_psycopg2cffi] PASSED [ 63%]
+tests/test_dialects.py::test_redshift_dialect_synonym_of_redshift_dialect_psycopg2 PASSED [ 63%]
+tests/test_dialects.py::TestStatementCache::test_statement_cache_flags PASSED [ 63%]
+tests/test_dialects.py::TestFeatureFlagConsistency::test_redshift_flags_inherited PASSED [ 64%]
+tests/test_dialects.py::TestEntryPoints::test_entry_points_loadable PASSED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_socket_errors[RedshiftDialect_psycopg2] SKIPPED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_socket_errors[RedshiftDialect_psycopg2cffi] SKIPPED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_socket_errors[RedshiftDialect_redshift_connector] PASSED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_non_disconnect_errors[RedshiftDialect_psycopg2] SKIPPED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_non_disconnect_errors[RedshiftDialect_psycopg2cffi] SKIPPED [ 64%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_is_disconnect_non_disconnect_errors[RedshiftDialect_redshift_connector] PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_do_ping_method_exists[RedshiftDialect_psycopg2] PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_do_ping_method_exists[RedshiftDialect_psycopg2cffi] PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestDisconnectSimulation::test_do_ping_method_exists[RedshiftDialect_redshift_connector] PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestPoolPrePingBehavior::test_pool_pre_ping_configuration PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestPoolPrePingBehavior::test_pool_pre_ping_documentation PASSED [ 65%]
+tests/test_disconnect_simulation.py::TestRedshiftConnectorDisconnectBehavior::test_do_ping_implementation[RedshiftDialect_redshift_connector] PASSED [ 66%]
+tests/test_disconnect_simulation.py::TestRedshiftConnectorDisconnectBehavior::test_enhanced_error_handling_integration[RedshiftDialect_redshift_connector] PASSED [ 66%]
+tests/test_disconnect_simulation.py::TestDisconnectRecoveryPatterns::test_disconnect_recovery_documentation PASSED [ 66%]
+tests/test_disconnect_simulation.py::TestDisconnectRecoveryPatterns::test_transient_error_classification PASSED [ 66%]
+tests/test_disconnect_simulation.py::TestConnectionPoolIntegration::test_pool_invalidation_on_disconnect PASSED [ 66%]
+tests/test_disconnect_simulation.py::TestConnectionPoolIntegration::test_connection_lifecycle_management PASSED [ 66%]
+tests/test_error_handling.py::TestProductionErrorHandler::test_production_error_handler_creation PASSED [ 66%]
+tests/test_error_handling.py::TestProductionErrorHandler::test_transient_error_detection PASSED [ 67%]
+tests/test_error_handling.py::TestProductionErrorHandler::test_disconnect_error_detection PASSED [ 67%]
+tests/test_error_handling.py::TestCircuitBreaker::test_circuit_breaker_creation PASSED [ 67%]
+tests/test_error_handling.py::TestCircuitBreaker::test_circuit_breaker_states PASSED [ 67%]
+tests/test_error_handling.py::TestCircuitBreaker::test_circuit_breaker_success_recovery PASSED [ 67%]
+tests/test_error_handling.py::TestDialectErrorHandling::test_error_handler_integration PASSED [ 67%]
+tests/test_error_handling.py::TestDialectErrorHandling::test_dialect_error_handling_integration PASSED [ 67%]
+tests/test_error_handling.py::TestDialectErrorHandling::test_rollback_error_handling PASSED [ 68%]
+tests/test_error_handling.py::TestDialectErrorHandling::test_commit_error_handling PASSED [ 68%]
+tests/test_error_handling.py::TestDisconnectDetection::test_is_disconnect_method_exists[RedshiftDialect_redshift_connector] PASSED [ 68%]
+tests/test_error_handling.py::TestDisconnectDetection::test_redshift_connector_has_do_ping PASSED [ 68%]
+tests/test_inspector_modernization.py::test_inspector_has_table PASSED   [ 68%]
+tests/test_inspector_modernization.py::test_inspector_get_table_names PASSED [ 68%]
+tests/test_inspector_modernization.py::test_inspector_get_view_names PASSED [ 68%]
+tests/test_inspector_modernization.py::test_inspector_interface_compatibility PASSED [ 69%]
+tests/test_inspector_modernization.py::test_inspector_caching_behavior PASSED [ 69%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_autocommit_isolation_level[RedshiftDialect_psycopg2] PASSED [ 69%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_autocommit_isolation_level[RedshiftDialect_psycopg2cffi] PASSED [ 69%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_autocommit_isolation_level[RedshiftDialect_redshift_connector] PASSED [ 69%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_read_committed_isolation_level[RedshiftDialect_psycopg2] PASSED [ 69%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_read_committed_isolation_level[RedshiftDialect_psycopg2cffi] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_read_committed_isolation_level[RedshiftDialect_redshift_connector] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_invalid_isolation_level_raises_error[RedshiftDialect_psycopg2] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_invalid_isolation_level_raises_error[RedshiftDialect_psycopg2cffi] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_invalid_isolation_level_raises_error[RedshiftDialect_redshift_connector] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_isolation_level_method_exists[RedshiftDialect_psycopg2] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_isolation_level_method_exists[RedshiftDialect_psycopg2cffi] PASSED [ 70%]
+tests/test_isolation_levels.py::TestIsolationLevels::test_isolation_level_method_exists[RedshiftDialect_redshift_connector] PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_type_available PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_type_properties PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_type_compilation PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_in_ischema_names PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_ddl_generation PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_type_error_handling PASSED [ 71%]
+tests/test_json_super_types.py::TestJsonType::test_json_bind_processor PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_type_available PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_type_properties PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_type_compilation PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_type_caching PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_type_large_data PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_result_processor PASSED [ 72%]
+tests/test_json_super_types.py::TestSuperType::test_super_ddl_generation PASSED [ 73%]
+tests/test_json_super_types.py::TestJsonSuperIntegration::test_json_and_super_in_same_table PASSED [ 73%]
+tests/test_json_super_types.py::TestJsonSuperIntegration::test_json_super_type_consistency PASSED [ 73%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_existing_types_available PASSED [ 73%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_geometry_type_compatibility PASSED [ 73%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_super_type_compatibility PASSED [ 73%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_timestamptz_type_compatibility PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_timetz_type_compatibility PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestExistingRedshiftTypes::test_hllsketch_type_compatibility PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestLegacyTypeRegistration::test_existing_ischema_names PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestLegacyTypeRegistration::test_all_types_in_module_exports PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestLegacyDDLGeneration::test_legacy_types_ddl_generation PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestLegacyDDLGeneration::test_mixed_legacy_and_new_types PASSED [ 74%]
+tests/test_legacy_type_compatibility.py::TestDialectCompatibility::test_dialect_properties_preserved PASSED [ 75%]
+tests/test_legacy_type_compatibility.py::TestDialectCompatibility::test_dialect_methods_preserved PASSED [ 75%]
+tests/test_legacy_type_compatibility.py::TestDialectCompatibility::test_compiler_classes_preserved PASSED [ 75%]
+tests/test_legacy_type_compatibility.py::TestDialectCompatibility::test_dialect_inheritance_preserved PASSED [ 75%]
+tests/test_legacy_type_compatibility.py::TestQueryGeneration::test_select_queries_with_legacy_types PASSED [ 75%]
+tests/test_legacy_type_compatibility.py::TestQueryGeneration::test_insert_queries_with_legacy_types PASSED [ 75%]
+tests/test_limit_offset_all_drivers.py::test_offset_only_requires_limit_all_all_drivers[RedshiftDialect_psycopg2] PASSED [ 75%]
+tests/test_limit_offset_all_drivers.py::test_offset_only_requires_limit_all_all_drivers[RedshiftDialect_psycopg2cffi] PASSED [ 76%]
+tests/test_limit_offset_all_drivers.py::test_offset_only_requires_limit_all_all_drivers[RedshiftDialect_redshift_connector] PASSED [ 76%]
+tests/test_limit_offset_all_drivers.py::test_limit_with_offset_no_limit_all[RedshiftDialect_psycopg2] PASSED [ 76%]
+tests/test_limit_offset_all_drivers.py::test_limit_with_offset_no_limit_all[RedshiftDialect_psycopg2cffi] PASSED [ 76%]
+tests/test_limit_offset_all_drivers.py::test_limit_with_offset_no_limit_all[RedshiftDialect_redshift_connector] PASSED [ 76%]
+tests/test_limit_offset_compilation.py::test_limit_offset_compilation PASSED [ 76%]
+tests/test_limit_offset_compilation.py::test_limit_offset_with_cte PASSED [ 76%]
+tests/test_limit_offset_compilation.py::test_limit_offset_with_subquery PASSED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_basic_select_one[psycopg2] PASSED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_basic_select_sysdate[psycopg2] PASSED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_create_temp_table_and_insert[psycopg2] PASSED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_super_json_type[psycopg2] PASSED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_unload_autocommit_isolation[psycopg2] FAILED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_from_s3_format[psycopg2] FAILED [ 77%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_basic_select_one[redshift_connector] PASSED [ 78%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_basic_select_sysdate[redshift_connector] PASSED [ 78%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_create_temp_table_and_insert[redshift_connector] PASSED [ 78%]
+tests/test_real_cluster_smoke.py::TestRealClusterSmoke::test_super_json_type[redshift_connector] PASSED [ 78%]
+tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_unload_autocommit_isolation[redshift_connector] FAILED [ 78%]
+tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_from_s3_format[redshift_connector] FAILED [ 78%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 79%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 79%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs4] PASSED [ 79%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 79%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 79%]
+tests/test_unload_from_select.py::test_parquet_format__bad_options_crash[redshift+psycopg2cffi-kwargs5] PASSED [ 79%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 79%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 80%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ] PASSED [ 80%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ] PASSED [ 80%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDelimitedIdentifiers1-CREATE TABLE "group" (\n            "this ""is it""" INTEGER NOT NULL,\n            "and this also" INTEGER,\n            PRIMARY KEY ("this ""is it""")\n        ) DISTSTYLE EVEN\n        ] XPASS [ 80%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDelimitedIdentifiers1-CREATE TABLE "group" (\n            "this ""is it""" INTEGER NOT NULL,\n            "and this also" INTEGER,\n            PRIMARY KEY ("this ""is it""")\n        ) DISTSTYLE EVEN\n        ] XFAIL [ 80%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionDelimitedIdentifiers2-CREATE TABLE "column" (\n                "excellent! & column" INTEGER NOT NULL,\n                "most @exce.llent " INTEGER,\n                PRIMARY KEY ("excellent! & column")\n        ) DISTSTYLE EVEN\n        ] XPASS [ 80%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionDelimitedIdentifiers2-CREATE TABLE "column" (\n                "excellent! & column" INTEGER NOT NULL,\n                "most @exce.llent " INTEGER,\n                PRIMARY KEY ("excellent! & column")\n        ) DISTSTYLE EVEN\n        ] XFAIL [ 80%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_definition[redshift+psycopg2-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 81%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ] FAILED [ 82%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ] PASSED [ 82%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ] ERROR [ 82%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ] PASSED [ 82%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ] ERROR [ 82%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ] PASSED [ 82%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ] ERROR [ 83%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ] PASSED [ 83%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ] ERROR [ 83%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 83%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 83%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 83%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 83%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 84%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 84%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 84%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 84%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 84%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 84%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 84%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 85%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 85%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 85%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 85%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 85%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 85%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 85%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ] PASSED [ 86%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ] ERROR [ 86%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDelimitedIdentifiers1-CREATE TABLE "group" (\n            "this ""is it""" INTEGER NOT NULL,\n            "and this also" INTEGER,\n            PRIMARY KEY ("this ""is it""")\n        ) DISTSTYLE EVEN\n        ] XPASS [ 86%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedIdentifiers1-CREATE TABLE "group" (\n            "this ""is it""" INTEGER NOT NULL,\n            "and this also" INTEGER,\n            PRIMARY KEY ("this ""is it""")\n        ) DISTSTYLE EVEN\n        ] XFAIL [ 86%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionDelimitedIdentifiers2-CREATE TABLE "column" (\n                "excellent! & column" INTEGER NOT NULL,\n                "most @exce.llent " INTEGER,\n                PRIMARY KEY ("excellent! & column")\n        ) DISTSTYLE EVEN\n        ] XPASS [ 86%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedIdentifiers2-CREATE TABLE "column" (\n                "excellent! & column" INTEGER NOT NULL,\n                "most @exce.llent " INTEGER,\n                PRIMARY KEY ("excellent! & column")\n        ) DISTSTYLE EVEN\n        ] XFAIL [ 86%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 87%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 87%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 87%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 87%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 87%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 87%]
+tests/test_reflection.py::test_definition[redshift+psycopg2cffi-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ] PASSED [ 87%]
+tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ] ERROR [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_get_indexes_returns_empty[RedshiftDialect_psycopg2] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_get_indexes_returns_empty[RedshiftDialect_psycopg2cffi] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_get_indexes_returns_empty[RedshiftDialect_redshift_connector] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_reflection_methods_exist[RedshiftDialect_psycopg2] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_reflection_methods_exist[RedshiftDialect_psycopg2cffi] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionParity::test_reflection_methods_exist[RedshiftDialect_redshift_connector] PASSED [ 88%]
+tests/test_reflection.py::TestReflectionContract::test_get_foreign_keys_returns_empty_list[RedshiftDialect_psycopg2] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_get_foreign_keys_returns_empty_list[RedshiftDialect_psycopg2cffi] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_get_foreign_keys_returns_empty_list[RedshiftDialect_redshift_connector] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_get_columns_includes_metadata[RedshiftDialect_psycopg2] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_get_columns_includes_metadata[RedshiftDialect_psycopg2cffi] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_get_columns_includes_metadata[RedshiftDialect_redshift_connector] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_has_table_honors_schema_and_quotes[RedshiftDialect_psycopg2] PASSED [ 89%]
+tests/test_reflection.py::TestReflectionContract::test_has_table_honors_schema_and_quotes[RedshiftDialect_psycopg2cffi] PASSED [ 90%]
+tests/test_reflection.py::TestReflectionContract::test_has_table_honors_schema_and_quotes[RedshiftDialect_redshift_connector] PASSED [ 90%]
+tests/test_relationkey_unquoted.py::test_unquoted[table-"schema"] PASSED [ 90%]
+tests/test_relationkey_unquoted.py::test_unquoted["table"-schema] PASSED [ 90%]
+tests/test_relationkey_unquoted.py::test_unquoted["table"-"schema"] PASSED [ 90%]
+tests/test_relationkey_unquoted.py::test_unquoted[table-schema] PASSED   [ 90%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_capability_flags PASSED [ 90%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_connection_methods PASSED [ 91%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_pool_configuration PASSED [ 91%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_error_handling_components PASSED [ 91%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_dialect_registration PASSED [ 91%]
+tests/test_sqlalchemy2_compatibility.py::TestSQLAlchemy2Compatibility::test_all_required_methods_present PASSED [ 91%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_statement_cache_flags_correct[RedshiftDialect_psycopg2] PASSED [ 91%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_statement_cache_flags_correct[RedshiftDialect_psycopg2cffi] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_statement_cache_flags_correct[RedshiftDialect_redshift_connector] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_repeated_compilation_consistency[RedshiftDialect_psycopg2] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_repeated_compilation_consistency[RedshiftDialect_psycopg2cffi] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_repeated_compilation_consistency[RedshiftDialect_redshift_connector] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_bound_parameter_handling[RedshiftDialect_psycopg2] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_bound_parameter_handling[RedshiftDialect_psycopg2cffi] PASSED [ 92%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_bound_parameter_handling[RedshiftDialect_redshift_connector] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_complex_query_caching[RedshiftDialect_psycopg2] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_complex_query_caching[RedshiftDialect_psycopg2cffi] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSanity::test_complex_query_caching[RedshiftDialect_redshift_connector] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_cache_behavior_sa_version_compatibility[1.4-RedshiftDialect_psycopg2] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_cache_behavior_sa_version_compatibility[1.4-RedshiftDialect_redshift_connector] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_cache_behavior_sa_version_compatibility[2.0-RedshiftDialect_psycopg2] PASSED [ 93%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_cache_behavior_sa_version_compatibility[2.0-RedshiftDialect_redshift_connector] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_no_cache_warnings_psycopg2[1.4-RedshiftDialect_psycopg2] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_no_cache_warnings_psycopg2[1.4-RedshiftDialect_redshift_connector] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_no_cache_warnings_psycopg2[2.0-RedshiftDialect_psycopg2] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheSAVersions::test_no_cache_warnings_psycopg2[2.0-RedshiftDialect_redshift_connector] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheMemoryBehavior::test_cache_enabled_performance[RedshiftDialect_redshift_connector] PASSED [ 94%]
+tests/test_statement_cache_sanity.py::TestStatementCacheMemoryBehavior::test_cache_disabled_behavior[RedshiftDialect_psycopg2] PASSED [ 94%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_numeric_precision_scale[RedshiftDialect_psycopg2] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_numeric_precision_scale[RedshiftDialect_psycopg2cffi] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_numeric_precision_scale[RedshiftDialect_redshift_connector] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_date_type_handling[RedshiftDialect_psycopg2] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_date_type_handling[RedshiftDialect_psycopg2cffi] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_date_type_handling[RedshiftDialect_redshift_connector] PASSED [ 95%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timestamp_vs_timestamptz[RedshiftDialect_psycopg2] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timestamp_vs_timestamptz[RedshiftDialect_psycopg2cffi] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timestamp_vs_timestamptz[RedshiftDialect_redshift_connector] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_super_json_type_processing[RedshiftDialect_psycopg2] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_super_json_type_processing[RedshiftDialect_psycopg2cffi] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_super_json_type_processing[RedshiftDialect_redshift_connector] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_json_type_processing[RedshiftDialect_psycopg2] PASSED [ 96%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_json_type_processing[RedshiftDialect_psycopg2cffi] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_json_type_processing[RedshiftDialect_redshift_connector] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_geometry_type_compilation[RedshiftDialect_psycopg2] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_geometry_type_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_geometry_type_compilation[RedshiftDialect_redshift_connector] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timetz_type_compilation[RedshiftDialect_psycopg2] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timetz_type_compilation[RedshiftDialect_psycopg2cffi] PASSED [ 97%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_timetz_type_compilation[RedshiftDialect_redshift_connector] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_string_type_length_handling[RedshiftDialect_psycopg2] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_string_type_length_handling[RedshiftDialect_psycopg2cffi] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_string_type_length_handling[RedshiftDialect_redshift_connector] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_boolean_type_handling[RedshiftDialect_psycopg2] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_boolean_type_handling[RedshiftDialect_psycopg2cffi] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeRoundTrips::test_boolean_type_handling[RedshiftDialect_redshift_connector] PASSED [ 98%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_super_invalid_json_handling[RedshiftDialect_psycopg2] PASSED [ 99%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_super_invalid_json_handling[RedshiftDialect_psycopg2cffi] PASSED [ 99%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_super_invalid_json_handling[RedshiftDialect_redshift_connector] PASSED [ 99%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_numeric_overflow_handling[RedshiftDialect_psycopg2] PASSED [ 99%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_numeric_overflow_handling[RedshiftDialect_psycopg2cffi] PASSED [ 99%]
+tests/test_type_roundtrips.py::TestTypeErrorHandling::test_numeric_overflow_handling[RedshiftDialect_redshift_connector] PASSED [ 99%]
+tests/test_unload_from_select.py::test_iam_role_partition_validation PASSED [100%]
+
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_pk_name[redshift+psycopg2cffi] _____________
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+____________ ERROR at setup of test_fk_name[redshift+psycopg2cffi] _____________
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_________ ERROR at setup of test_long_tablename[redshift+psycopg2cffi] _________
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+______ ERROR at setup of test_no_table_reflection[redshift+psycopg2cffi] _______
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+______ ERROR at setup of test_no_search_path_leak[redshift+psycopg2cffi] _______
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+___ ERROR at setup of test_external_table_reflection[redshift+psycopg2cffi] ____
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+________ ERROR at setup of test_view_reflection[redshift+psycopg2cffi] _________
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+__ ERROR at setup of test_late_binding_view_reflection[redshift+psycopg2cffi] __
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+__________ ERROR at setup of test_simple_query[redshift+psycopg2cffi] __________
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_custom_types_reflection_inspection[redshift+psycopg2cffi-GEOMETRY] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_custom_types_reflection_inspection[redshift+psycopg2cffi-SUPER] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMETZ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMESTAMPTZ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_custom_types_reflection_inspection[redshift+psycopg2cffi-HLLSKETCH] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+_ ERROR at setup of test_reflection[redshift+psycopg2cffi-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ] _
+E   ModuleNotFoundError: No module named 'psycopg2cffi'
+
+During handling of the above exception, another exception occurred:
+E   ImportError: No module named psycopg2cffi
+=================================== FAILURES ===================================
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/.venv/lib/python3.9/site-packages/sqlalchemy/engine/default.py:952: sqlalchemy.exc.InternalError: (psycopg2.errors.InternalError_) Unknown std exception when calling external catalog API:
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/.venv/lib/python3.9/site-packages/sqlalchemy/sql/base.py:611: TypeError: Additional arguments should be named <dialectname>_<argument>, got 'autoload'
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/.venv/lib/python3.9/site-packages/sqlalchemy/sql/base.py:611: TypeError: Additional arguments should be named <dialectname>_<argument>, got 'autoload'
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/sqlalchemy_redshift/dialect.py:1698: ImportError: No module named psycopg2cffi
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_reflection.py:214: AssertionError: assert 'CREATE TABLE...ISTSTYLE EVEN' == 'CREATE TABLE...ISTSTYLE EVEN'
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_reflection.py:214: AssertionError: assert 'CREATE TABLE...ISTSTYLE EVEN' == 'CREATE TABLE...ISTSTYLE EVEN'
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_real_cluster_smoke.py:196: Exception: UNLOAD test failed: (psycopg2.errors.InternalError_) invalid CREDENTIALS clause
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_real_cluster_smoke.py:229: Exception: COPY test failed: (psycopg2.errors.InternalError_) invalid CREDENTIALS clause
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_real_cluster_smoke.py:196: Exception: UNLOAD test failed: (redshift_connector.error.ProgrammingError) {'S': 'ERROR', 'C': 'XX000', 'M': 'invalid CREDENTIALS clause', 'D': '\n  -----------------------------------------------\n  error:  invalid CREDENTIALS clause\n  code:      8001\n  context:   \n  query:     41692508\n  location:  aws_credentials_parser.cpp:107\n  process:   query0_124_41692508 [pid=6912]\n  -----------------------------------------------\n', 'F': '/opt/brazil-pkg-cache/packages/RedshiftPADB/RedshiftPADB-1.0.17891.0/AL2_x86_64/generic-flavor/src/src/sys/xen_execute.cpp', 'L': '14177', 'R': 'pg_throw'}
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_real_cluster_smoke.py:229: Exception: COPY test failed: (redshift_connector.error.ProgrammingError) {'S': 'ERROR', 'C': 'XX000', 'M': 'invalid CREDENTIALS clause', 'D': '\n  -----------------------------------------------\n  error:  invalid CREDENTIALS clause\n  code:      8001\n  context:   \n  query:     41692518\n  location:  aws_credentials_parser.cpp:107\n  process:   padbmaster [pid=1073996262]\n  -----------------------------------------------\n', 'F': '/opt/brazil-pkg-cache/packages/RedshiftPADB/RedshiftPADB-1.0.17891.0/AL2_x86_64/generic-flavor/src/src/sys/xen_execute.cpp', 'L': '14177', 'R': 'pg_throw'}
+/Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_reflection.py:214: AssertionError: assert 'CREATE TABLE...ISTSTYLE EVEN' == 'CREATE TABLE...ISTSTYLE EVEN'
+=============================== warnings summary ===============================
+tests/rs_sqla_test_utils/models.py:8
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/rs_sqla_test_utils/models.py:8: MovedIn20Warning: The ``declarative_base()`` function is now available as sqlalchemy.orm.declarative_base(). (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    Base = declarative.declarative_base()
+
+tests/test_copy_unload_autocommit.py:15
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_copy_unload_autocommit.py:15: PytestUnknownMarkWarning: Unknown pytest.mark.integration_redshift - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration_redshift
+
+redshift_sqlalchemy/__init__.py:19
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/redshift_sqlalchemy/__init__.py:19: DeprecationWarning: redshift_sqlalchemy has been renamed to sqlalchemy_redshift.
+  
+  The redshift_sqlalchemy compatibility package will be removed in
+  a future release, so it is recommended to update all package references.
+  
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+tests/test_copy_command.py::test_format[redshift+psycopg2]
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2]
+tests/test_copy_command.py::test_format[redshift+psycopg2cffi]
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2cffi]
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/sqlalchemy_redshift/commands.py:467: DeprecationWarning: 'JSON' should be, <Format.json: 'JSON'>, an instance of <enum 'Format'>
+    warnings.warn(msg, DeprecationWarning)
+
+tests/test_copy_command.py::test_compression[redshift+psycopg2]
+tests/test_copy_command.py::test_compression[redshift+psycopg2cffi]
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/sqlalchemy_redshift/commands.py:467: DeprecationWarning: 'LZOP' should be, <Compression.lzop: 'LZOP'>, an instance of <enum 'Compression'>
+    warnings.warn(msg, DeprecationWarning)
+
+tests/test_copy_command.py::test_ascii_nul_as_redshift_null[redshift+psycopg2]
+tests/test_copy_command.py::test_ascii_nul_as_redshift_null[redshift+psycopg2cffi]
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/sqlalchemy_redshift/commands.py:467: DeprecationWarning: 'BZIP2' should be, <Compression.bzip2: 'BZIP2'>, an instance of <enum 'Compression'>
+    warnings.warn(msg, DeprecationWarning)
+
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2]
+tests/test_copy_command.py::test_json_upload_with_manifest_ordered_columns[redshift+psycopg2cffi]
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/sqlalchemy_redshift/commands.py:467: DeprecationWarning: 'GZIP' should be, <Compression.gzip: 'GZIP'>, an instance of <enum 'Compression'>
+    warnings.warn(msg, DeprecationWarning)
+
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-GEOMETRY]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-SUPER]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-TIMETZ]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-TIMESTAMPTZ]
+tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2-HLLSKETCH]
+  /Users/vahidsbr/sqlalchemy/sqlalchemy-redshift/tests/test_dialect_types.py:194: SADeprecationWarning: The from_engine() method on Inspector is deprecated and will be removed in a future release.  Please use the sqlalchemy.inspect() function on an Engine or Connection in order to acquire an Inspector. (deprecated since: 1.4)
+    inspect = reflection.Inspector.from_engine(redshift_engine)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_reflection.py::test_external_table_reflection[redshift+psycopg2]
+FAILED tests/test_reflection_views.py::test_view_reflection[redshift+psycopg2]
+FAILED tests/test_reflection_views.py::test_late_binding_view_reflection[redshift+psycopg2]
+FAILED tests/test_default_ssl.py::test_ssl_args[redshift+psycopg2cffi] - Impo...
+FAILED tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ]
+FAILED tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ]
+FAILED tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_unload_autocommit_isolation[psycopg2]
+FAILED tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_from_s3_format[psycopg2]
+FAILED tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_unload_autocommit_isolation[redshift_connector]
+FAILED tests/test_real_cluster_smoke.py::TestRealClusterCopyUnload::test_copy_from_s3_format[redshift_connector]
+FAILED tests/test_reflection.py::test_reflection[redshift+psycopg2-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_constraint_names.py::test_pk_name[redshift+psycopg2cffi] - I...
+ERROR tests/test_constraint_names.py::test_fk_name[redshift+psycopg2cffi] - I...
+ERROR tests/test_long_tablename.py::test_long_tablename[redshift+psycopg2cffi]
+ERROR tests/test_reflection.py::test_no_table_reflection[redshift+psycopg2cffi]
+ERROR tests/test_reflection.py::test_no_search_path_leak[redshift+psycopg2cffi]
+ERROR tests/test_reflection.py::test_external_table_reflection[redshift+psycopg2cffi]
+ERROR tests/test_reflection_views.py::test_view_reflection[redshift+psycopg2cffi]
+ERROR tests/test_reflection_views.py::test_late_binding_view_reflection[redshift+psycopg2cffi]
+ERROR tests/test_simple_query.py::test_simple_query[redshift+psycopg2cffi] - ...
+ERROR tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-GEOMETRY]
+ERROR tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-SUPER]
+ERROR tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMETZ]
+ERROR tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-TIMESTAMPTZ]
+ERROR tests/test_dialect_types.py::test_custom_types_reflection_inspection[redshift+psycopg2cffi-HLLSKETCH]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDistKey-\n    CREATE TABLE reflection_distkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1)\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionSortKey-\n    CREATE TABLE reflection_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN SORTKEY (col1, col2)\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionInterleavedSortKey-\n    CREATE TABLE reflection_interleaved_sortkey (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN INTERLEAVED SORTKEY (col1, col2)\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionSortKeyDistKeyWithSpaces-\n    CREATE TABLE sort_key_with_spaces (\n        "col with spaces" INTEGER NOT NULL\n    ) DISTSTYLE KEY DISTKEY ("col with spaces") SORTKEY ("col with spaces")\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionUniqueConstraint-\n    CREATE TABLE reflection_unique_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        UNIQUE (col1, col2)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionPrimaryKeyConstraint-\n    CREATE TABLE reflection_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionNamedPrimaryKeyConstraint-\n    CREATE TABLE reflection_named_pk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER NOT NULL,\n        CONSTRAINT reflection_named_pk_constraint__pkey\n            PRIMARY KEY (col1, col2)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionForeignKeyConstraint-\n    CREATE TABLE reflection_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        FOREIGN KEY(col1) REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionNamedForeignKeyConstraint-\n    CREATE TABLE reflection_named_fk_constraint (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER,\n        PRIMARY KEY (col1),\n        CONSTRAINT reflection_named_fk_constraint__fk\n            FOREIGN KEY(col1)\n            REFERENCES reflection_unique_constraint (col1)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDefaultValue-\n    CREATE TABLE reflection_default_value (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER DEFAULT 5,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionIdentity-\n    CREATE TABLE reflection_identity (\n        col1 INTEGER NOT NULL,\n        col2 INTEGER IDENTITY(1,3),\n        col3 INTEGER,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableName-\n    CREATE TABLE other_schema."this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionDelimitedTableNoSchema-\n    CREATE TABLE "this.table" (\n        id INTEGER NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-BasicInOtherSchema-\n    CREATE TABLE other_schema.basic (\n        col1 INTEGER NOT NULL,\n        PRIMARY KEY (col1)\n    ) DISTSTYLE KEY DISTKEY (col1) SORTKEY (col1)\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionCustomReservedWords-\n    CREATE TABLE "aes256" (\n        "open" INTEGER,\n        "tag" INTEGER,\n        pkey INTEGER NOT NULL,\n        PRIMARY KEY (pkey)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-Referencing-\n    CREATE TABLE other_schema.referencing (\n        referenced_table_id INTEGER NOT NULL,\n        PRIMARY KEY (referenced_table_id),\n        FOREIGN KEY(referenced_table_id) REFERENCES\n            other_schema.referenced (id)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-Referenced-\n    CREATE TABLE other_schema.referenced (\n        id INTEGER IDENTITY(1,1) NOT NULL,\n        PRIMARY KEY (id)\n    ) DISTSTYLE EVEN\n    ]
+ERROR tests/test_reflection.py::test_reflection[redshift+psycopg2cffi-ReflectionCompositeForeignKeyConstraint-\n    CREATE TABLE reflection_composite_fk_constraint (\n        id INTEGER NOT NULL,\n        col1 INTEGER,\n        col2 INTEGER,\n        PRIMARY KEY (id),\n        FOREIGN KEY(col1, col2)\n        REFERENCES reflection_pk_constraint (col1, col2)\n    ) DISTSTYLE EVEN\n    ]
+= 11 failed, 622 passed, 4 skipped, 4 xfailed, 4 xpassed, 18 warnings, 32 errors in 381.20s (0:06:21) =
