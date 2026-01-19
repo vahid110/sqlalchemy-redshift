@@ -152,6 +152,7 @@ class TestRealClusterCopyUnload:
     def test_copy_unload_autocommit_isolation(self, real_engine):
         """Test COPY/UNLOAD with AUTOCOMMIT isolation level"""
         s3_bucket = TEST_CONFIG.get('REDSHIFT_TEST_S3_BUCKET')
+        iam_role = TEST_CONFIG.get('REDSHIFT_TEST_IAM_ROLE')
         s3_prefix = f"s3://{s3_bucket}/sqlalchemy-test/"
         
         # Create engine with AUTOCOMMIT isolation
@@ -178,6 +179,7 @@ class TestRealClusterCopyUnload:
             unload_sql = f"""
                 UNLOAD ('SELECT id, name FROM test_copy_table ORDER BY id')
                 TO '{s3_prefix}test_unload_'
+                IAM_ROLE '{iam_role}'
                 FORMAT AS CSV
                 HEADER
                 ALLOWOVERWRITE
@@ -196,8 +198,16 @@ class TestRealClusterCopyUnload:
                 raise Exception(f"UNLOAD test failed: {e}")
     
     def test_copy_from_s3_format(self, real_engine):
-        """Test COPY command format (without actual S3 data)"""
+        """Test COPY command from S3.
+        
+        Requires: S3 file at {bucket}/test-data/sample.csv with content:
+            id,name
+            1,test1
+            2,test2
+            3,test3
+        """
         s3_bucket = TEST_CONFIG.get('REDSHIFT_TEST_S3_BUCKET')
+        iam_role = TEST_CONFIG.get('REDSHIFT_TEST_IAM_ROLE')
         s3_path = f"s3://{s3_bucket}/test-data/sample.csv"
         
         # Create engine with AUTOCOMMIT isolation
@@ -218,6 +228,7 @@ class TestRealClusterCopyUnload:
             copy_sql = f"""
                 COPY test_copy_target (id, name)
                 FROM '{s3_path}'
+                IAM_ROLE '{iam_role}'
                 FORMAT AS CSV
                 IGNOREHEADER 1
             """

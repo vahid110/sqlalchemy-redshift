@@ -63,7 +63,8 @@ def load_test_config():
                     'REDSHIFT_TEST_USER': section.get('user'),
                     'REDSHIFT_TEST_PASSWORD': section.get('password'),
                     'REDSHIFT_TEST_PORT': section.get('port', '5439'),
-                    'REDSHIFT_TEST_S3_BUCKET': section.get('s3_bucket')
+                    'REDSHIFT_TEST_S3_BUCKET': section.get('s3_bucket'),
+                    'REDSHIFT_TEST_IAM_ROLE': section.get('iam_role_arn')
                 })
     
     # Set environment variables for other modules
