@@ -14,9 +14,25 @@
 - ✅ Fixed foreign key DDL comparison in tests (3 tests)
 - ✅ Fixed schema=None reflection bug (major fix - 193 additional tests passing)
 
-## Remaining Issues
-- 32 errors: psycopg2cffi driver not installed (optional, can be skipped)
-- 6 failures: Infrastructure issues (IAM/S3 permissions, external catalogs)
+## Remaining Issues - Action Required
+
+### 1. psycopg2cffi Driver Tests (32 errors)
+**Status**: Driver not installed
+**Action Required**: Install PostgreSQL development libraries and psycopg2cffi
+```bash
+brew install postgresql  # macOS
+sudo apt-get install postgresql-dev  # Ubuntu
+pip install psycopg2cffi
+```
+
+### 2. Infrastructure Tests (6 failures)
+**Status**: AWS infrastructure not properly configured
+**Action Required**:
+- **S3 COPY/UNLOAD tests (4 failures)**: Configure valid IAM role with S3 permissions in `tests/redshift_test.ini`
+- **External table test (1 failure)**: Set up AWS Glue catalog and proper IAM permissions
+- **SSL test (1 failure)**: Related to psycopg2cffi driver
+
+**These are real test failures that need to be addressed for production readiness.**
 
 ## Failure Categories
 
@@ -33,11 +49,12 @@
 - test_default_ssl (1 test)
 
 **Action**: 
-- **Priority**: LOW (optional driver, complex installation)
-- **Solution**: Skip these tests OR install PostgreSQL dev libraries first
-- **Installation requires**: `brew install postgresql` (macOS) then `pip install psycopg2cffi`
-- **Recommendation**: Skip these tests - psycopg2cffi is rarely used, psycopg2 is the standard
-- **Note**: These are not real failures, just missing optional dependency
+- **Priority**: MEDIUM (optional driver but should be tested)
+- **Solution**: Install PostgreSQL dev libraries then psycopg2cffi
+- **Installation**: 
+  - macOS: `brew install postgresql && pip install psycopg2cffi`
+  - Ubuntu: `sudo apt-get install postgresql-dev && pip install psycopg2cffi`
+- **Note**: These tests validate an alternative driver that some users rely on
 
 ---
 
@@ -70,9 +87,10 @@ Unknown std exception when calling external catalog API
 **Root Cause**: External schema creation requires IAM role with proper permissions. The test is trying to create an external schema but the IAM role may not have the required permissions or the external catalog doesn't exist.
 
 **Action**:
-- **Priority**: LOW (external tables are advanced feature)
-- **Solution**: Either fix IAM permissions or mark test as requiring specific setup
-- **Note**: This is an infrastructure/permissions issue, not a code bug
+- **Priority**: MEDIUM (external tables are production feature)
+- **Solution**: Set up AWS Glue catalog and configure IAM permissions
+- **Required**: IAM role with Glue catalog access
+- **Note**: External tables are a key Redshift feature for data lake integration
 
 ---
 
@@ -107,10 +125,11 @@ code: 8001
 **Root Cause**: IAM role ARN in test configuration doesn't have proper S3 permissions or the role doesn't exist
 
 **Action**:
-- **Priority**: LOW (infrastructure issue)
-- **Solution**: Update IAM role permissions or use a valid role ARN
-- **File**: `tests/redshift_test.ini`
-- **Note**: This is a test environment configuration issue, not a code bug
+- **Priority**: MEDIUM (infrastructure setup required)
+- **Solution**: Configure AWS IAM role with proper S3 permissions
+- **File**: `tests/redshift_test.ini` - update `iam_role_arn` field
+- **Required permissions**: s3:GetObject, s3:ListBucket for the test bucket
+- **Note**: These tests validate critical COPY/UNLOAD functionality
 
 ---
 
@@ -182,13 +201,19 @@ pip install psycopg2cffi
 - ✅ View reflection tests fixed (2 tests)
 - ✅ Foreign key schema tests fixed (3 tests)
 
-**Infrastructure Issues**: 6 failures (IAM/S3/external catalog)
-**Missing Dependencies**: 32 errors (psycopg2cffi not installed - optional)
+**Setup Required**: 38 tests need environment configuration
+- 32 tests: Require psycopg2cffi driver installation
+- 6 tests: Require AWS infrastructure setup (IAM/S3/Glue)
 
 **Current Status**:
-- ✅ 627 passing tests (92.6%)
+- ✅ 627 passing tests (92.6%) with psycopg2 driver
 - ✅ 0 real code failures
 - ✅ schema=None bug fixed (major achievement)
 - ✅ SA 2.0 compatibility complete
-- 6 infrastructure-dependent tests (can be skipped in CI)
-- 32 optional driver tests (can be skipped if driver not needed)
+- ⚙️ 38 tests pending proper environment setup
+
+**Next Steps for 100% Pass Rate**:
+1. Install psycopg2cffi driver (32 tests)
+2. Configure AWS IAM role with S3 permissions (4 tests)
+3. Set up AWS Glue catalog access (1 test)
+4. Verify SSL configuration with psycopg2cffi (1 test)
