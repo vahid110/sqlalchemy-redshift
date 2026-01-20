@@ -1,0 +1,6 @@
+[db]
+default = redshift+psycopg2://USERNAME:PASSWORD@HOST:PORT/DATABASE
+
+[sqla_testing]
+requirement_cls = requirements:Requirements
+profile_file = .profiles.txt

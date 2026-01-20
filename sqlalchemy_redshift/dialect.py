@@ -777,6 +777,34 @@ class RedshiftDDLCompiler(PGDDLCompiler):
     <BLANKLINE>
     """
 
+    def visit_check_constraint(self, constraint, **kw):
+        """
+        Skip CHECK constraints - Redshift doesn't support them.
+        
+        Redshift silently accepts CHECK constraints but doesn't enforce them.
+        To avoid errors during CREATE TABLE, we skip rendering them entirely.
+        """
+        return None
+
+    def visit_create_index(self, create, include_table_schema=True, **kw):
+        """
+        Skip CREATE INDEX - Redshift doesn't support traditional indexes.
+        
+        Redshift uses sort keys and distribution keys instead of indexes.
+        Returns a no-op SELECT to prevent execution errors.
+        """
+        # Return a no-op query that does nothing
+        return "SELECT 1 WHERE FALSE"
+
+    def visit_set_constraint_comment(self, create, **kw):
+        """
+        Skip COMMENT ON CONSTRAINT - Redshift doesn't support constraint comments.
+        
+        Since we skip CHECK constraint creation, attempting to comment on them
+        causes errors. Returns a no-op SELECT to prevent execution errors.
+        """
+        return "SELECT 1 WHERE FALSE"
+
     def post_create_table(self, table):
         kwargs = ["diststyle", "distkey", "sortkey", "interleaved_sortkey"]
         info = table.dialect_options['redshift']
@@ -877,6 +905,7 @@ class RedshiftDialectMixin(DefaultDialect):
     insert_returning = False
     use_insertmanyvalues = True  # 2.0 bulk INSERT VALUES optimization
     supports_sane_rowcount = False
+    supports_indexes = False  # Redshift uses sort/dist keys, not indexes
 
     statement_compiler = RedshiftCompiler
     ddl_compiler = RedshiftDDLCompiler
@@ -1045,7 +1074,10 @@ class RedshiftDialectMixin(DefaultDialect):
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
-        """Check if table exists using modern Inspector-compatible approach"""
+        """Check if table exists using modern Inspector-compatible approach
+        
+        Disables server-side cursors to avoid Redshift's limitation of one cursor per connection.
+        """
         if not schema:
             try:
                 # Use Inspector interface for SA 2.0 compatibility
@@ -1055,10 +1087,13 @@ class RedshiftDialectMixin(DefaultDialect):
                 schema = 'public'
 
         info_cache = kw.get('info_cache')
+        # Pass stream_results=False to avoid server-side cursor conflicts
+        kw['_has_table_check'] = True
         table = self._get_all_relation_info(connection,
                                             schema=schema,
                                             table_name=table_name,
-                                            info_cache=info_cache)
+                                            info_cache=info_cache,
+                                            **kw)
 
         return bool(table)
 
@@ -1436,7 +1471,7 @@ class RedshiftDialectMixin(DefaultDialect):
             ) if table_name else ""
         )
 
-        result = connection.execute(sa.text("""
+        query = sa.text("""
         SELECT
           c.relkind,
           n.oid as "schema_oid",
@@ -1474,7 +1509,14 @@ class RedshiftDialectMixin(DefaultDialect):
             JOIN pg_catalog.pg_user u ON u.usesysid = s.esowner
         where 1 {schema_clause} {table_clause}
         ORDER BY "relkind", "schema_oid", "schema";
-        """.format(schema_clause=schema_clause, table_clause=table_clause)))
+        """.format(schema_clause=schema_clause, table_clause=table_clause))
+        
+        # Disable server-side cursor when called from has_table to avoid Redshift limitation
+        if kw.get('_has_table_check'):
+            result = connection.execute(query.execution_options(stream_results=False))
+        else:
+            result = connection.execute(query)
+            
         relations = {}
         for rel in result:
             # When schema=None is passed, use None for the key instead of rel.schema

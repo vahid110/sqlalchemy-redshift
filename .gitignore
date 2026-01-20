@@ -67,3 +67,4 @@ tests/redshift_test.ini
 
 # Existing gitignore content would be preserved
 .venv
+sqlalchemy_compliance/setup.cfg
