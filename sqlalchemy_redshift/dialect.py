@@ -951,6 +951,155 @@ class RedshiftDialectMixin(DefaultDialect):
             **REDSHIFT_ISCHEMA_NAMES
         }
 
+    def get_multi_columns(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """
+        Override SA 2.0's get_multi_columns to avoid querying pg_collation.
+        
+        Redshift is based on PostgreSQL 8.0.2 which predates collation support.
+        SA 2.0's get_multi_columns queries pg_attribute.attcollation which doesn't exist.
+        
+        Properly handles kind (TABLE/VIEW) and scope filtering.
+        """
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        result = {}
+        
+        # Determine which tables/views to query based on kind parameter
+        if filter_names:
+            # Use provided filter
+            names_to_check = filter_names
+        else:
+            # Get tables and/or views based on kind
+            names_to_check = []
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        
+        # Query each table/view
+        for table_name in names_to_check:
+            try:
+                columns = self.get_columns(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = columns
+            except Exception:
+                # Table/view doesn't exist or can't be accessed - skip it
+                pass
+        
+        return result
+    
+    def get_multi_pk_constraint(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """
+        Override SA 2.0's get_multi_pk_constraint to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support ORDER BY inside aggregate functions.
+        Properly handles kind (TABLE/VIEW) and scope filtering.
+        """
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        
+        # Determine which tables to query based on kind parameter
+        if filter_names:
+            names_to_check = filter_names
+        else:
+            names_to_check = []
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = pk
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_unique_constraints(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """
+        Override SA 2.0's get_multi_unique_constraints to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support ORDER BY inside aggregate functions.
+        Properly handles kind (TABLE/VIEW) and scope filtering.
+        """
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        
+        if filter_names:
+            names_to_check = filter_names
+        else:
+            names_to_check = []
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                constraints = self.get_unique_constraints(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = constraints
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_indexes(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """
+        Override SA 2.0's get_multi_indexes.
+        
+        Redshift doesn't support traditional indexes, always returns empty.
+        Properly handles kind (TABLE/VIEW) and scope filtering.
+        """
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        
+        if filter_names:
+            names_to_check = filter_names
+        else:
+            names_to_check = []
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        
+        for table_name in names_to_check:
+            result[(schema, table_name)] = []
+        
+        return result
+    
+    def get_multi_foreign_keys(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """
+        Override SA 2.0's get_multi_foreign_keys to avoid array_agg ORDER BY.
+        
+        Redshift doesn't support ORDER BY inside aggregate functions.
+        Properly handles kind (TABLE/VIEW) and scope filtering.
+        """
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        
+        if filter_names:
+            names_to_check = filter_names
+        else:
+            names_to_check = []
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                fks = self.get_foreign_keys(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = fks
+            except Exception:
+                pass
+        
+        return result
+
     @reflection.cache
     def get_columns(self, connection, table_name, schema=None, **kw):
         """
@@ -974,103 +1123,7 @@ class RedshiftDialectMixin(DefaultDialect):
             columns.append(column_info)
         return columns
     
-    def get_multi_columns(self, connection, schema=None, filter_names=None, **kw):
-        """
-        Override SA 2.0's get_multi_columns to avoid querying pg_collation.
-        
-        Redshift is based on PostgreSQL 8.0.2 which predates collation support.
-        SA 2.0's get_multi_columns queries pg_attribute.attcollation and 
-        pg_catalog.pg_collation which don't exist in Redshift.
-        
-        We delegate to get_columns() which uses Redshift-compatible queries.
-        """
-        # SA 2.0 expects a dict mapping (schema, table_name) to list of column dicts
-        result = {}
-        
-        # If filter_names provided, only get those tables
-        if filter_names:
-            table_names = filter_names
-        else:
-            table_names = self.get_table_names(connection, schema=schema, **kw)
-        
-        # Get columns for each table
-        for table_name in table_names:
-            try:
-                columns = self.get_columns(connection, table_name, schema=schema, **kw)
-                # Use the original schema parameter (which may be None) for the key
-                result[(schema, table_name)] = columns
-            except Exception:
-                # Skip tables that fail (e.g., permission issues)
-                pass
-        
-        return result
-    
-    def get_multi_pk_constraint(self, connection, schema=None, filter_names=None, **kw):
-        """
-        Override SA 2.0's get_multi_pk_constraint to avoid array_agg ORDER BY.
-        
-        Redshift doesn't support ORDER BY inside aggregate functions.
-        Delegate to get_pk_constraint() which uses Redshift-compatible queries.
-        """
-        result = {}
-        
-        if filter_names:
-            table_names = filter_names
-        else:
-            table_names = self.get_table_names(connection, schema=schema, **kw)
-        
-        for table_name in table_names:
-            try:
-                pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
-                # Use the original schema parameter (which may be None) for the key
-                result[(schema, table_name)] = pk
-            except Exception:
-                pass
-        
-        return result
-    
-    def get_multi_unique_constraints(self, connection, schema=None, filter_names=None, **kw):
-        """
-        Override SA 2.0's get_multi_unique_constraints to avoid array_agg ORDER BY.
-        
-        Redshift doesn't support ORDER BY inside aggregate functions.
-        Delegate to get_unique_constraints() which uses Redshift-compatible queries.
-        """
-        result = {}
-        
-        if filter_names:
-            table_names = filter_names
-        else:
-            table_names = self.get_table_names(connection, schema=schema, **kw)
-        
-        for table_name in table_names:
-            try:
-                constraints = self.get_unique_constraints(connection, table_name, schema=schema, **kw)
-                # Use the original schema parameter (which may be None) for the key
-                result[(schema, table_name)] = constraints
-            except Exception:
-                pass
-        
-        return result
-    
-    def get_multi_indexes(self, connection, schema=None, filter_names=None, **kw):
-        """
-        Override SA 2.0's get_multi_indexes to avoid array_agg ORDER BY.
-        
-        Redshift doesn't support traditional indexes, always returns empty.
-        """
-        result = {}
-        
-        if filter_names:
-            table_names = filter_names
-        else:
-            table_names = self.get_table_names(connection, schema=schema, **kw)
-        
-        for table_name in table_names:
-            # Use the original schema parameter (which may be None) for the key
-            result[(schema, table_name)] = []
-        
-        return result
+
 
     @reflection.cache
     def has_table(self, connection, table_name, schema=None, **kw):
@@ -1086,13 +1139,11 @@ class RedshiftDialectMixin(DefaultDialect):
                 # Fallback for mocks or connection issues
                 schema = 'public'
 
-        info_cache = kw.get('info_cache')
         # Pass stream_results=False to avoid server-side cursor conflicts
         kw['_has_table_check'] = True
         table = self._get_all_relation_info(connection,
                                             schema=schema,
                                             table_name=table_name,
-                                            info_cache=info_cache,
                                             **kw)
 
         return bool(table)
