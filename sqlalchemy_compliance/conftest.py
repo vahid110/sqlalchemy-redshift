@@ -3,4 +3,4 @@
 from sqlalchemy.testing.plugin.pytestplugin import *  # noqa: F401, F403
 
 # Import Redshift-specific provisioning
-import provision  # noqa: F401
+from . import provision  # noqa: F401

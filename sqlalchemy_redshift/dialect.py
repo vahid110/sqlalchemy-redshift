@@ -958,31 +958,30 @@ class RedshiftDialectMixin(DefaultDialect):
         Redshift is based on PostgreSQL 8.0.2 which predates collation support.
         SA 2.0's get_multi_columns queries pg_attribute.attcollation which doesn't exist.
         
-        Properly handles kind (TABLE/VIEW) and scope filtering.
+        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
         """
-        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
-        # Determine which tables/views to query based on kind parameter
+        # Determine which tables/views to query based on kind and scope
         if filter_names:
-            # Use provided filter
             names_to_check = filter_names
         else:
-            # Get tables and/or views based on kind
             names_to_check = []
             if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
+                names_to_check.extend(self._get_table_names_with_scope(connection, schema, scope, **kw))
             if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+                names_to_check.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
+            if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
+                names_to_check.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
         
-        # Query each table/view
         for table_name in names_to_check:
             try:
                 columns = self.get_columns(connection, table_name, schema=schema, **kw)
                 result[(schema, table_name)] = columns
             except Exception:
-                # Table/view doesn't exist or can't be accessed - skip it
+                # Skip tables that don't exist or can't be accessed
                 pass
         
         return result
@@ -992,21 +991,26 @@ class RedshiftDialectMixin(DefaultDialect):
         Override SA 2.0's get_multi_pk_constraint to avoid array_agg ORDER BY.
         
         Redshift doesn't support ORDER BY inside aggregate functions.
-        Properly handles kind (TABLE/VIEW) and scope filtering.
+        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
         """
         from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
-        # Determine which tables to query based on kind parameter
+        # Get actual tables/views that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self._get_table_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
+            actual_names.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
+        
+        # If filter_names provided, only include tables that actually exist
         if filter_names:
-            names_to_check = filter_names
+            names_to_check = [name for name in filter_names if name in actual_names]
         else:
-            names_to_check = []
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
-            if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+            names_to_check = actual_names
         
         for table_name in names_to_check:
             try:
@@ -1022,20 +1026,26 @@ class RedshiftDialectMixin(DefaultDialect):
         Override SA 2.0's get_multi_unique_constraints to avoid array_agg ORDER BY.
         
         Redshift doesn't support ORDER BY inside aggregate functions.
-        Properly handles kind (TABLE/VIEW) and scope filtering.
+        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
         """
         from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
+        # Get actual tables/views that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self._get_table_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
+            actual_names.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
+        
+        # If filter_names provided, only include tables that actually exist
         if filter_names:
-            names_to_check = filter_names
+            names_to_check = [name for name in filter_names if name in actual_names]
         else:
-            names_to_check = []
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
-            if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+            names_to_check = actual_names
         
         for table_name in names_to_check:
             try:
@@ -1051,21 +1061,28 @@ class RedshiftDialectMixin(DefaultDialect):
         Override SA 2.0's get_multi_indexes.
         
         Redshift doesn't support traditional indexes, always returns empty.
-        Properly handles kind (TABLE/VIEW) and scope filtering.
+        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
         """
         from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
-        if filter_names:
-            names_to_check = filter_names
-        else:
-            names_to_check = []
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
-            if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+        # Get actual tables/views that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self._get_table_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
+            actual_names.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
         
+        # If filter_names provided, only include tables that actually exist
+        if filter_names:
+            names_to_check = [name for name in filter_names if name in actual_names]
+        else:
+            names_to_check = actual_names
+        
+        # Redshift doesn't support indexes, return empty list for all tables
         for table_name in names_to_check:
             result[(schema, table_name)] = []
         
@@ -1076,20 +1093,26 @@ class RedshiftDialectMixin(DefaultDialect):
         Override SA 2.0's get_multi_foreign_keys to avoid array_agg ORDER BY.
         
         Redshift doesn't support ORDER BY inside aggregate functions.
-        Properly handles kind (TABLE/VIEW) and scope filtering.
+        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
         """
         from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
+        # Get actual tables/views that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self._get_table_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
+        if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
+            actual_names.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
+        
+        # If filter_names provided, only include tables that actually exist
         if filter_names:
-            names_to_check = filter_names
+            names_to_check = [name for name in filter_names if name in actual_names]
         else:
-            names_to_check = []
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema=schema, **kw))
-            if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema=schema, **kw))
+            names_to_check = actual_names
         
         for table_name in names_to_check:
             try:
@@ -1099,6 +1122,56 @@ class RedshiftDialectMixin(DefaultDialect):
                 pass
         
         return result
+    
+    def _get_table_names_with_scope(self, connection, schema, scope, **kw):
+        """Get table names filtered by ObjectScope."""
+        from sqlalchemy.engine.reflection import ObjectScope
+        
+        if scope == ObjectScope.TEMPORARY:
+            # Only temporary tables - use name-based heuristic
+            return self._get_temp_table_names(connection, schema, **kw)
+        elif scope == ObjectScope.DEFAULT:
+            # Non-temporary tables - since Redshift doesn't expose relpersistence,
+            # we can't reliably detect temp tables. Return all tables for DEFAULT.
+            return self.get_table_names(connection, schema, **kw)
+        else:
+            # ANY or None - all tables
+            return self.get_table_names(connection, schema, **kw)
+    
+    def _get_view_names_with_scope(self, connection, schema, scope, **kw):
+        """Get view names filtered by ObjectScope."""
+        from sqlalchemy.engine.reflection import ObjectScope
+        
+        if scope == ObjectScope.TEMPORARY:
+            # Only temporary views - use name-based heuristic
+            return self._get_temp_view_names(connection, schema, **kw)
+        elif scope == ObjectScope.DEFAULT:
+            # Non-temporary views - since Redshift doesn't expose relpersistence,
+            # we can't reliably detect temp views. Return all views for DEFAULT.
+            return self.get_view_names(connection, schema, **kw)
+        else:
+            # ANY or None - all views
+            return self.get_view_names(connection, schema, **kw)
+    
+    def _get_materialized_view_names_with_scope(self, connection, schema, scope, **kw):
+        """Get materialized view names filtered by ObjectScope."""
+        from sqlalchemy.engine.reflection import ObjectScope
+        
+        # Redshift doesn't expose relpersistence, so we can't reliably detect temp materialized views
+        # For now, return all materialized views for any scope
+        return self._get_materialized_view_names(connection, schema, **kw)
+    
+    def _get_materialized_view_names(self, connection, schema, **kw):
+        """Get materialized view names using relkind='m'."""
+        return self._get_table_or_view_names('m', connection, schema, **kw)
+    
+    def _get_temp_table_names(self, connection, schema, **kw):
+        """Get temporary table names using relpersistence."""
+        return self._get_table_or_view_names('r', connection, schema, temp_only=True, **kw)
+    
+    def _get_temp_view_names(self, connection, schema, **kw):
+        """Get temporary view names using relpersistence."""
+        return self._get_table_or_view_names('v', connection, schema, temp_only=True, **kw)
 
     @reflection.cache
     def get_columns(self, connection, table_name, schema=None, **kw):
@@ -1368,15 +1441,13 @@ class RedshiftDialectMixin(DefaultDialect):
             'redshift_interleaved_sortkey': interleaved_sortkey,
         }
 
-    def _get_table_or_view_names(self, relkind, connection, schema=None, **kw):
+    def _get_table_or_view_names(self, relkind, connection, schema=None, temp_only=False, **kw):
         """Get table or view names with SA 1.4/2.0 compatible schema handling"""
         if not schema:
             try:
-                # Use Inspector interface for SA 2.0 compatibility
                 default_schema = inspect(connection).default_schema_name
                 schema = default_schema
             except Exception:
-                # Fallback for mocks or connection issues
                 schema = 'public'
         info_cache = kw.get('info_cache')
         all_relations = self._get_all_relation_info(connection,
@@ -1385,7 +1456,15 @@ class RedshiftDialectMixin(DefaultDialect):
         relation_names = []
         for key, relation in all_relations.items():
             if key.schema == schema and relation.relkind == relkind:
-                relation_names.append(key.name)
+                # Filter by temp_only if specified
+                if temp_only:
+                    # Check if temporary (relpersistence would be 't' for temp tables)
+                    # Since we don't have relpersistence in our query, check table name prefix
+                    # Redshift temp tables typically start with '#' or are in pg_temp schema
+                    if relation.relname.startswith('#') or 'temp' in relation.relname.lower():
+                        relation_names.append(key.name)
+                else:
+                    relation_names.append(key.name)
         return relation_names
 
     def _get_column_info(self, *args, **kwargs):
