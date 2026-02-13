@@ -1,8 +1,6 @@
-"""
-Tests for production-grade error handling and resilience features
-"""
+"""Tests for production-grade error handling features"""
 import pytest
-from sqlalchemy_redshift.resilience import ProductionErrorHandler, CircuitBreaker
+from sqlalchemy_redshift.resilience import ProductionErrorHandler
 from sqlalchemy_redshift.dialect import RedshiftDialect_redshift_connector
 
 
@@ -33,44 +31,6 @@ class TestProductionErrorHandler:
         assert not handler.is_disconnect_error(Exception("syntax error"))
 
 
-class TestCircuitBreaker:
-    """Test circuit breaker functionality"""
-    
-    def test_circuit_breaker_creation(self):
-        """Test CircuitBreaker can be created"""
-        breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=60)
-        assert breaker is not None
-        assert breaker.failure_threshold == 3
-        assert breaker.recovery_timeout == 60
-
-    def test_circuit_breaker_states(self):
-        """Test circuit breaker state management"""
-        breaker = CircuitBreaker(failure_threshold=2, recovery_timeout=1)
-        
-        # Should start closed
-        assert breaker.state == 'CLOSED'
-        
-        # Simulate failures
-        breaker._on_failure()
-        assert breaker.state == 'CLOSED'  # Still closed after 1 failure
-        
-        breaker._on_failure()
-        assert breaker.state == 'OPEN'    # Open after 2 failures
-
-    def test_circuit_breaker_success_recovery(self):
-        """Test circuit breaker recovery on success"""
-        breaker = CircuitBreaker(failure_threshold=2, recovery_timeout=1)
-        
-        # Cause failures to open circuit
-        breaker._on_failure()
-        breaker._on_failure()
-        assert breaker.state == 'OPEN'
-        
-        # Success should reset
-        breaker._on_success()
-        assert breaker.state == 'CLOSED'
-        assert breaker.failure_count == 0
-
 
 class TestDialectErrorHandling:
     """Test dialect integration with error handling"""
@@ -95,10 +55,6 @@ class TestDialectErrorHandling:
         assert callable(redshift_dialect.is_disconnect)
         assert hasattr(redshift_dialect.error_handler, 'is_transient_error')
         assert hasattr(redshift_dialect.error_handler, 'is_disconnect_error')
-        
-        # Test circuit breaker
-        assert hasattr(redshift_dialect.circuit_breaker, 'state')
-        assert redshift_dialect.circuit_breaker.state == 'CLOSED'
 
     def test_rollback_error_handling(self):
         """Test rollback error handling"""

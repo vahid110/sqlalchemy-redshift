@@ -40,7 +40,7 @@ from .commands import (AlterTableAppendCommand, Compression, CopyCommand,
 from .ddl import (CreateMaterializedView, DropMaterializedView,
                   get_table_attributes)
 from .auth import parse_auth_params, redact_credentials
-from .resilience import ProductionErrorHandler, CircuitBreaker
+from .resilience import ProductionErrorHandler
 
 sa_version = Version(sa.__version__)
 logger = getLogger(__name__)
@@ -1920,7 +1920,6 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         self.client_encoding = client_encoding
         # Initialize production-grade error handling
         self.error_handler = ProductionErrorHandler()
-        self.circuit_breaker = CircuitBreaker()
 
     @classmethod
     def import_dbapi(cls):

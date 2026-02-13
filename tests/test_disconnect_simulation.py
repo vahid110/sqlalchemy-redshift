@@ -184,9 +184,8 @@ class TestRedshiftConnectorDisconnectBehavior:
         """Test enhanced error handling integration"""
         dialect = dialect_cls()
         
-        # Should have error handler and circuit breaker
+        # Should have error handler
         assert hasattr(dialect, 'error_handler')
-        assert hasattr(dialect, 'circuit_breaker')
         
         # Error handler should have disconnect detection
         error_handler = dialect.error_handler

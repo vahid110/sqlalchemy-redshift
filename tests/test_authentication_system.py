@@ -107,7 +107,6 @@ class TestDialectAuthenticationIntegration:
         
         # Verify authentication components are present
         assert hasattr(redshift_dialect, 'error_handler')
-        assert hasattr(redshift_dialect, 'circuit_breaker')
         
         # Verify enhanced connection methods
         assert hasattr(redshift_dialect, 'do_ping')

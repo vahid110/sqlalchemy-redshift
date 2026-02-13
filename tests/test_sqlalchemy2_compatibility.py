@@ -42,9 +42,8 @@ class TestSQLAlchemy2Compatibility:
         """Test error handling components are available"""
         redshift_dialect = RedshiftDialect_redshift_connector()
         
-        # Should have error handler and circuit breaker
+        # Should have error handler
         assert hasattr(redshift_dialect, 'error_handler')
-        assert hasattr(redshift_dialect, 'circuit_breaker')
         
         # Should have enhanced disconnect detection
         assert hasattr(redshift_dialect, 'is_disconnect')

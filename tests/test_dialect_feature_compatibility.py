@@ -140,7 +140,6 @@ class TestFeatureDetection:
         
         # Production error handling components
         assert hasattr(dialect, 'error_handler')
-        assert hasattr(dialect, 'circuit_breaker')
 
 
 class TestTypeSystemCompatibility:
