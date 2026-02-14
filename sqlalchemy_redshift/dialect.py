@@ -908,6 +908,7 @@ class RedshiftDialectMixin(DefaultDialect):
     use_insertmanyvalues = True  # 2.0 bulk INSERT VALUES optimization
     supports_sane_rowcount = False
     supports_indexes = False  # Redshift uses sort/dist keys, not indexes
+    supports_empty_insert = False  # Redshift requires DEFAULT for IDENTITY columns
 
     statement_compiler = RedshiftCompiler
     ddl_compiler = RedshiftDDLCompiler
