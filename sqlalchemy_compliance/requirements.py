@@ -110,3 +110,8 @@ class Requirements(SuiteRequirements):
     def enum_data_type(self):
         """Redshift doesn't support ENUM types"""
         return exclusions.closed()
+    
+    @property
+    def autoincrement_insert(self):
+        """Redshift uses IDENTITY columns, not sequences for autoincrement"""
+        return exclusions.closed()

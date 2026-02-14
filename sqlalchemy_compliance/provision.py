@@ -24,12 +24,26 @@ def _redshift_post_configure_engine(url, engine, follower_ident):
 def _redshift_drop_all_schema_objects_pre_tables(cfg, eng, inspector, schema, tables, **kw):
     """Drop views before tables since views may depend on tables."""
     with eng.begin() as conn:
-        # Drop all views in the schema
-        for view_name in inspector.get_view_names(schema=schema):
+        # Drop all views in the schema - be aggressive
+        try:
+            for view_name in inspector.get_view_names(schema=schema):
+                try:
+                    conn.execute(text(f'DROP VIEW IF EXISTS "{schema}"."{view_name}" CASCADE'))
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        
+        # Also drop views in public schema if schema is None
+        if schema is None or schema == 'public':
             try:
-                conn.execute(text(f'DROP VIEW IF EXISTS "{schema}"."{view_name}" CASCADE'))
-            except ProgrammingError:
-                pass  # View might not exist or already dropped
+                for view_name in inspector.get_view_names(schema='public'):
+                    try:
+                        conn.execute(text(f'DROP VIEW IF EXISTS "{view_name}" CASCADE'))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
 
 
 @provision.drop_all_schema_objects_post_tables.for_db("redshift")
