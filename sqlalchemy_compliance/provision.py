@@ -24,22 +24,33 @@ def _redshift_post_configure_engine(url, engine, follower_ident):
 def _redshift_drop_all_schema_objects_pre_tables(cfg, eng, inspector, schema, tables, **kw):
     """Drop views before tables since views may depend on tables."""
     with eng.begin() as conn:
-        # Drop all views in the schema - be aggressive
-        try:
-            for view_name in inspector.get_view_names(schema=schema):
-                try:
-                    conn.execute(text(f'DROP VIEW IF EXISTS "{schema}"."{view_name}" CASCADE'))
-                except Exception:
-                    pass
-        except Exception:
-            pass
+        # Get all schemas to clean
+        schemas_to_clean = [schema] if schema else ['public', 'test_schema', 'test_schema_2']
         
-        # Also drop views in public schema if schema is None
-        if schema is None or schema == 'public':
+        for schema_name in schemas_to_clean:
+            # Drop all views
             try:
-                for view_name in inspector.get_view_names(schema='public'):
+                view_names = inspector.get_view_names(schema=schema_name)
+                for view_name in view_names:
                     try:
-                        conn.execute(text(f'DROP VIEW IF EXISTS "{view_name}" CASCADE'))
+                        if schema_name:
+                            conn.execute(text(f'DROP VIEW IF EXISTS "{schema_name}"."{view_name}" CASCADE'))
+                        else:
+                            conn.execute(text(f'DROP VIEW IF EXISTS "{view_name}" CASCADE'))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            
+            # Drop all tables (in case some weren't tracked)
+            try:
+                table_names = inspector.get_table_names(schema=schema_name)
+                for table_name in table_names:
+                    try:
+                        if schema_name:
+                            conn.execute(text(f'DROP TABLE IF EXISTS "{schema_name}"."{table_name}" CASCADE'))
+                        else:
+                            conn.execute(text(f'DROP TABLE IF EXISTS "{table_name}" CASCADE'))
                     except Exception:
                         pass
             except Exception:
