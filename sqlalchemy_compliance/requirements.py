@@ -130,3 +130,8 @@ class Requirements(SuiteRequirements):
     def autoincrement_insert(self):
         """Redshift uses IDENTITY columns, not sequences for autoincrement"""
         return exclusions.closed()
+    
+    @property
+    def duplicate_key_raises_integrity_error(self):
+        """Redshift doesn't enforce PRIMARY KEY constraints (informational only)"""
+        return exclusions.closed()
