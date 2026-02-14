@@ -17,6 +17,11 @@ class Requirements(SuiteRequirements):
         return exclusions.closed()
     
     @property
+    def for_update(self):
+        """Redshift doesn't support FOR UPDATE clause"""
+        return exclusions.closed()
+    
+    @property
     def indexes(self):
         """Redshift doesn't support traditional indexes"""
         return exclusions.closed()
@@ -104,6 +109,11 @@ class Requirements(SuiteRequirements):
     @property
     def is_distinct_from(self):
         """Redshift doesn't support IS DISTINCT FROM"""
+        return exclusions.closed()
+    
+    @property
+    def supports_is_distinct_from(self):
+        """Redshift doesn't support IS DISTINCT FROM operator"""
         return exclusions.closed()
     
     @property
