@@ -955,19 +955,10 @@ class RedshiftDialectMixin(DefaultDialect):
         }
 
     def get_multi_columns(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
-        """
-        Override SA 2.0's get_multi_columns to avoid querying pg_collation.
-        
-        Redshift is based on PostgreSQL 8.0.2 which predates collation support.
-        SA 2.0's get_multi_columns queries pg_attribute.attcollation which doesn't exist.
-        
-        Properly handles kind (TABLE/VIEW/MATERIALIZED_VIEW) and scope filtering.
-        """
         from sqlalchemy.engine.reflection import ObjectKind
         
         result = {}
         
-        # Determine which tables/views to query based on kind and scope
         if filter_names:
             names_to_check = filter_names
         else:
@@ -978,13 +969,13 @@ class RedshiftDialectMixin(DefaultDialect):
                 names_to_check.extend(self._get_view_names_with_scope(connection, schema, scope, **kw))
             if kind is None or kind & ObjectKind.MATERIALIZED_VIEW:
                 names_to_check.extend(self._get_materialized_view_names_with_scope(connection, schema, scope, **kw))
+            names_to_check = list(dict.fromkeys(names_to_check))
         
         for table_name in names_to_check:
             try:
                 columns = self.get_columns(connection, table_name, schema=schema, **kw)
                 result[(schema, table_name)] = columns
             except Exception:
-                # Skip tables that don't exist or can't be accessed
                 pass
         
         return result
@@ -1650,9 +1641,9 @@ class RedshiftDialectMixin(DefaultDialect):
             
         relations = {}
         for rel in result:
-            # When schema=None is passed, use None for the key instead of rel.schema
-            # This ensures the key matches what callers expect
-            key_schema = schema if schema is not None else None
+            # When schema is explicitly provided, use it for the key
+            # When schema=None, use the actual schema from the result to avoid mixing schemas
+            key_schema = schema if schema is not None else rel.schema
             key = RelationKey(rel.relname, key_schema, connection)
             relations[key] = rel
         return relations
@@ -1680,9 +1671,9 @@ class RedshiftDialectMixin(DefaultDialect):
         )))
 
         for col in result:
-            # When schema=None is passed, use None for the key instead of col.schema
-            # This ensures the key matches what callers expect
-            key_schema = schema if schema is not None else None
+            # When schema is explicitly provided, use it for the key
+            # When schema=None, use the actual schema from the result to avoid mixing schemas
+            key_schema = schema if schema is not None else col.schema
             key = RelationKey(col.table_name, key_schema, connection)
             all_columns[key].append(col)
 
@@ -1742,9 +1733,9 @@ class RedshiftDialectMixin(DefaultDialect):
         """.format(schema_clause=schema_clause, table_clause=table_clause)))
         all_constraints = defaultdict(list)
         for con in result:
-            # When schema=None is passed, use None for the key instead of con.schema
-            # This ensures the key matches what callers expect
-            key_schema = schema if schema is not None else None
+            # When schema is explicitly provided, use it for the key
+            # When schema=None, use the actual schema from the result to avoid mixing schemas
+            key_schema = schema if schema is not None else con.schema
             key = RelationKey(con.table_name, key_schema, connection)
             all_constraints[key].append(con)
         return all_constraints
