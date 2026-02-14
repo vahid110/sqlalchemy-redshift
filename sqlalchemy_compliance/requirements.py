@@ -22,6 +22,11 @@ class Requirements(SuiteRequirements):
         return exclusions.closed()
     
     @property
+    def index_reflection(self):
+        """Redshift doesn't support index reflection (no indexes exist)"""
+        return exclusions.closed()
+    
+    @property
     def check_constraints(self):
         """CHECK constraints are informational only, not enforced"""
         return exclusions.closed()
