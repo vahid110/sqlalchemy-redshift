@@ -135,3 +135,8 @@ class Requirements(SuiteRequirements):
     def duplicate_key_raises_integrity_error(self):
         """Redshift doesn't enforce PRIMARY KEY constraints (informational only)"""
         return exclusions.closed()
+    
+    @property
+    def autoincrement_without_sequence(self):
+        """Redshift uses IDENTITY, but test assumes sequence behavior"""
+        return exclusions.closed()
