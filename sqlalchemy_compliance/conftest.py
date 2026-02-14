@@ -18,3 +18,10 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(pytest.mark.skip(
                     reason="Redshift doesn't support SELECT FOR UPDATE"
                 ))
+        
+        # Skip autoincrement roundtrip tests - Redshift uses IDENTITY not sequences
+        if "ServerSideCursorsTest" in nodeid:
+            if "test_roundtrip_fetchall" in nodeid or "test_roundtrip_fetchmany" in nodeid:
+                item.add_marker(pytest.mark.skip(
+                    reason="Redshift uses IDENTITY columns, not sequences for autoincrement"
+                ))
