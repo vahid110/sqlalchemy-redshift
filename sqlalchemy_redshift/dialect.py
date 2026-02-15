@@ -1432,6 +1432,50 @@ class RedshiftDialectMixin(DefaultDialect):
         return self._get_table_or_view_names('v', connection, schema, **kw)
 
     @reflection.cache
+    def get_temp_table_names(self, connection, schema=None, **kw):
+        """Return temporary table names using schema pattern instead of relpersistence.
+        
+        Overrides PGDialect.get_temp_table_names() which uses pg_class.relpersistence
+        column that doesn't exist in Redshift (Postgres 8.0.2 era).
+        
+        Uses schema pattern (pg_temp_%) to identify temporary tables.
+        """
+        return self._get_table_or_view_names('r', connection, schema, temp_only=True, **kw)
+
+    @reflection.cache
+    def get_temp_view_names(self, connection, schema=None, **kw):
+        """Return temporary view names using schema pattern instead of relpersistence.
+        
+        Overrides PGDialect.get_temp_view_names() which uses pg_class.relpersistence
+        column that doesn't exist in Redshift (Postgres 8.0.2 era).
+        
+        Uses schema pattern (pg_temp_%) to identify temporary views.
+        """
+        return self._get_table_or_view_names('v', connection, schema, temp_only=True, **kw)
+
+    @reflection.cache
+    def get_temp_materialized_view_names(self, connection, schema=None, **kw):
+        """Return temporary materialized view names using schema pattern.
+        
+        Overrides PGDialect method that uses pg_class.relpersistence
+        column that doesn't exist in Redshift (Postgres 8.0.2 era).
+        
+        Uses schema pattern (pg_temp_%) to identify temporary materialized views.
+        """
+        return self._get_table_or_view_names('m', connection, schema, temp_only=True, **kw)
+
+    @reflection.cache
+    def get_materialized_view_names(self, connection, schema=None, **kw):
+        """Return materialized view names using relkind instead of relpersistence.
+        
+        Overrides PGDialect.get_materialized_view_names() which uses pg_class.relpersistence
+        column that doesn't exist in Redshift (Postgres 8.0.2 era).
+        
+        Returns non-temp materialized views by excluding pg_temp_% schemas.
+        """
+        return self._get_table_or_view_names('m', connection, schema, temp_only=False, **kw)
+
+    @reflection.cache
     def get_view_definition(self, connection, view_name, schema=None, **kw):
         """Return view definition.
         Given a :class:`.Connection`, a string `view_name`,
@@ -1514,7 +1558,10 @@ class RedshiftDialectMixin(DefaultDialect):
         }
 
     def _get_table_or_view_names(self, relkind, connection, schema=None, temp_only=False, **kw):
-        """Get table or view names with SA 1.4/2.0 compatible schema handling"""
+        """Get table or view names with SA 1.4/2.0 compatible schema handling.
+        
+        Uses schema pattern (pg_temp_%) for temp detection instead of relpersistence.
+        """
         if not schema:
             try:
                 default_schema = inspect(connection).default_schema_name
@@ -1527,15 +1574,16 @@ class RedshiftDialectMixin(DefaultDialect):
                                                     info_cache=info_cache)
         relation_names = []
         for key, relation in all_relations.items():
-            if key.schema == schema and relation.relkind == relkind:
-                # Filter by temp_only if specified
-                if temp_only:
-                    # Check if temporary (relpersistence would be 't' for temp tables)
-                    # Since we don't have relpersistence in our query, check table name prefix
-                    # Redshift temp tables typically start with '#' or are in pg_temp schema
-                    if relation.relname.startswith('#') or 'temp' in relation.relname.lower():
-                        relation_names.append(key.name)
-                else:
+            # Use schema pattern for temp detection (Redshift doesn't have relpersistence)
+            is_temp_schema = key.schema and key.schema.startswith('pg_temp_')
+            
+            if temp_only:
+                # Only include temp tables/views (pg_temp_% schemas)
+                if is_temp_schema and relation.relkind == relkind:
+                    relation_names.append(key.name)
+            else:
+                # Exclude temp tables/views for normal queries
+                if key.schema == schema and relation.relkind == relkind and not is_temp_schema:
                     relation_names.append(key.name)
         return relation_names
 
