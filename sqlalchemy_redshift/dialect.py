@@ -1485,6 +1485,10 @@ class RedshiftDialectMixin(DefaultDialect):
         :meth:`~sqlalchemy.engine.interfaces.Dialect.get_view_definition`.
         """
         view = self._get_redshift_relation(connection, view_name, schema, **kw)
+        # Check if it's actually a view (relkind='v' or 'm' for materialized view)
+        if view.relkind not in ('v', 'm'):
+            key = RelationKey(view_name, schema, connection)
+            raise sa.exc.NoSuchTableError(key)
         return view.view_definition
 
     def get_indexes(self, connection, table_name, schema, **kw):
@@ -1679,8 +1683,8 @@ class RedshiftDialectMixin(DefaultDialect):
             key = key.unquoted()
         try:
             return all_relations[key]
-        except KeyError:
-            raise sa.exc.NoSuchTableError(key)
+        except KeyError as e:
+            raise sa.exc.NoSuchTableError(key) from e
 
     def _get_redshift_columns(self, connection, table_name, schema=None, **kw):
         info_cache = kw.get('info_cache')
@@ -1693,19 +1697,34 @@ class RedshiftDialectMixin(DefaultDialect):
         key = RelationKey(table_name, schema, connection)
         if key not in all_schema_columns.keys():
             key = key.unquoted()
-        return all_schema_columns[key]
+        try:
+            return all_schema_columns[key]
+        except KeyError as e:
+            raise sa.exc.NoSuchTableError(key) from e
 
     def _get_redshift_constraints(self, connection, table_name,
                                   schema=None, **kw):
         info_cache = kw.get('info_cache')
+        
+        # First check if table exists to provide proper error
+        all_relations = self._get_all_relation_info(connection,
+                                                    schema=schema,
+                                                    table_name=table_name,
+                                                    info_cache=info_cache)
+        key = RelationKey(table_name, schema, connection)
+        if key not in all_relations.keys():
+            key_unquoted = key.unquoted()
+            if key_unquoted not in all_relations.keys():
+                raise sa.exc.NoSuchTableError(key)
+            key = key_unquoted
+        
+        # Now get constraints
         all_constraints = self._get_all_constraint_info(connection,
                                                         schema=schema,
                                                         table_name=table_name,
                                                         info_cache=info_cache)
-        key = RelationKey(table_name, schema, connection)
-        if key not in all_constraints.keys():
-            key = key.unquoted()
-        return all_constraints[key]
+        # Return empty list if no constraints (table exists but has no constraints)
+        return all_constraints.get(key, [])
 
     @reflection.cache
     def _get_all_relation_info(self, connection, **kw):
