@@ -140,3 +140,8 @@ class Requirements(SuiteRequirements):
     def autoincrement_without_sequence(self):
         """Redshift uses IDENTITY, but test assumes sequence behavior"""
         return exclusions.closed()
+    
+    @property
+    def reflect_table_options(self):
+        """Redshift supports reflecting table options (diststyle, distkey, sortkey)"""
+        return exclusions.open()
