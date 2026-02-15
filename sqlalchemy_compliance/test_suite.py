@@ -11,3 +11,4 @@ from sqlalchemy.testing.suite import *  # noqa: F401, F403
 
 # Explicitly exclude tests for unsupported features
 del UuidTest  # Redshift doesn't support UUID type
+del EnumTest  # Redshift doesn't support ENUM type
