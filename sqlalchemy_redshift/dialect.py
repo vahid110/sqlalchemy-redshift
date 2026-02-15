@@ -1396,11 +1396,13 @@ class RedshiftDialectMixin(DefaultDialect):
         for conname, attrs in uniques.items():
             m = FOREIGN_KEY_RE.match(attrs['condef'])
             colstring = m.group('referred_columns')
-            referred_columns = SQL_IDENTIFIER_RE.findall(colstring)
-            referred_table = m.group('referred_table')
+            referred_columns = [c.strip('"') for c in SQL_IDENTIFIER_RE.findall(colstring)]
+            referred_table = m.group('referred_table').strip('"')
             referred_schema = m.group('referred_schema')
+            if referred_schema:
+                referred_schema = referred_schema.strip('"')
             colstring = m.group('columns')
-            constrained_columns = SQL_IDENTIFIER_RE.findall(colstring)
+            constrained_columns = [c.strip('"') for c in SQL_IDENTIFIER_RE.findall(colstring)]
             fkey_d = {
                 'name': conname,
                 'constrained_columns': constrained_columns,
