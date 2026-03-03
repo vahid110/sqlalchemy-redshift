@@ -98,9 +98,44 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 ## Success Criteria
 
 - ✅ `redshift+redshift_connector://` uses new implementation
-- ✅ `redshift+redshift_connector_legacy://` uses old implementation
-- ✅ Reflection uses `cursor.get_*()` native APIs
+- ⏳ `redshift+redshift_connector_legacy://` uses old implementation (needs setup.py)
+- ✅ Reflection uses `cursor.get_*()` native APIs (with SQL fallback)
 - ✅ SA 2.0 compatible
 - ✅ psycopg2 unchanged
-- ✅ Tests pass
+- ⏳ Tests pass (need to add tests)
 - ✅ Backward compatible
+
+---
+
+## Progress
+
+### ✅ Step 1: Rename existing class (DONE)
+- Renamed `RedshiftDialect_redshift_connector` → `RedshiftDialect_redshift_connector_legacy`
+- Added backward compatibility docstring
+- Commit: daa834f
+
+### ✅ Step 2-3: Implement new class with native APIs (DONE)
+- `get_columns()` - Uses `cursor.get_columns()` with SQL fallback
+- `get_table_names()` - Uses `cursor.get_tables(types=['TABLE'])`
+- `get_view_names()` - Uses `cursor.get_tables(types=['VIEW'])`
+- `get_pk_constraint()` - Uses `cursor.get_primary_keys()` with SQL fallback
+- `get_foreign_keys()` - Uses `cursor.get_imported_keys()` with SQL fallback
+- `get_multi_columns()` - SA 2.0 multi-reflection
+- `get_multi_pk_constraint()` - SA 2.0 multi-reflection
+- `get_multi_foreign_keys()` - SA 2.0 multi-reflection
+- `get_multi_unique_constraints()` - Returns empty dict
+- `get_multi_indexes()` - Returns empty dict
+- Commit: dfe500d
+
+**Tested on:**
+- Cluster v1.0.117891 (show_discovery v2) - SQL fallback works ✅
+- Cluster v1.0.227967 (show_discovery v4+) - Native APIs work ✅
+
+### ⏳ Step 4: Update setup.py (TODO)
+- Add entry point for new dialect
+- Add entry point for legacy dialect
+
+### ⏳ Step 5: Add tests (TODO)
+- Compare sqlalchemy2 vs main branches
+- Cherry-pick relevant tests
+- Add unit tests for native API paths
