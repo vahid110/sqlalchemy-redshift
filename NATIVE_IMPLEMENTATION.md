@@ -131,9 +131,10 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 - Cluster v1.0.117891 (show_discovery v2) - SQL fallback works ✅
 - Cluster v1.0.227967 (show_discovery v4+) - Native APIs work ✅
 
-### ⏳ Step 4: Update setup.py (TODO)
-- Add entry point for new dialect
-- Add entry point for legacy dialect
+### ✅ Step 4: Update setup.py (DONE)
+- Added entry point for new dialect: `redshift.redshift_connector`
+- Added entry point for legacy dialect: `redshift.redshift_connector_legacy`
+- Commit: b9eabb5
 
 ### ⏳ Step 5: Add tests (TODO)
 

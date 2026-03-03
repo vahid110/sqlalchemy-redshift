@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.venv/
 build/
 develop-eggs/
 dist/
@@ -59,3 +60,12 @@ target/
 
 # IDE
 .idea/
+
+# Database credentials
+config.ini
+# Test credentials - never commit real credentials
+tests/redshift_test.ini
+
+# Existing gitignore content would be preserved
+.venv
+sqlalchemy_compliance/setup.cfg
