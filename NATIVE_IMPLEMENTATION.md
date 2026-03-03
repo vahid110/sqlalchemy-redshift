@@ -136,6 +136,24 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
 - Add entry point for legacy dialect
 
 ### ⏳ Step 5: Add tests (TODO)
-- Compare sqlalchemy2 vs main branches
-- Cherry-pick relevant tests
-- Add unit tests for native API paths
+
+**Test Categories from sqlalchemy2 branch:**
+
+1. **Unit Tests** (no cluster needed):
+   - `test_sqlalchemy2_compatibility.py` - SA 2.0 flags and methods
+   - `test_dialect_types.py` - Type system tests
+   - `test_compiler.py` - SQL compilation tests
+
+2. **Integration Tests** (require cluster):
+   - `test_reflection.py` - Reflection methods (PRIORITY)
+   - `test_inspector_modernization.py` - SA 2.0 Inspector features
+   - `test_real_cluster_smoke.py` - Basic connectivity
+
+3. **Compliance Tests** (sqlalchemy_compliance/):
+   - SQLAlchemy test suite integration
+   - setup.cfg with connection string
+
+**Implementation Plan:**
+- Add basic unit test for native API paths
+- Cherry-pick reflection tests from sqlalchemy2
+- Add test for show_discovery fallback behavior
