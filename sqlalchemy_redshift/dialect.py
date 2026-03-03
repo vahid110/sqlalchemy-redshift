@@ -1251,7 +1251,12 @@ class RedshiftDialect_psycopg2cffi(
     supports_statement_cache = False
 
 
-class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
+class RedshiftDialect_redshift_connector_legacy(RedshiftDialectMixin, PGDialect):
+    """Legacy redshift_connector dialect for backward compatibility.
+    
+    Uses custom SQL queries for reflection (SA 1.4 compatible).
+    For new code, use RedshiftDialect_redshift_connector which uses native APIs.
+    """
 
     class RedshiftCompiler_redshift_connector(RedshiftCompiler, PGCompiler):
         def limit_clause(self, select, **kw):
@@ -1426,6 +1431,55 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             cparams['user'] = cparams['username']
             del cparams['username']
 
+        default_args.update(cparams)
+        return cargs, default_args
+
+
+class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
+    """SA 2.0 compatible redshift_connector dialect using native APIs.
+    
+    Uses redshift_connector's cursor.get_*() methods for reflection.
+    """
+    driver = 'redshift_connector'
+    supports_statement_cache = True
+    supports_unicode_statements = True
+    supports_unicode_binds = True
+    default_paramstyle = "format"
+    supports_sane_multi_rowcount = True
+    use_setinputsizes = False
+    
+    def __init__(self, client_encoding=None, **kwargs):
+        super().__init__(client_encoding=client_encoding, **kwargs)
+        self.client_encoding = client_encoding
+    
+    @classmethod
+    def dbapi(cls):
+        try:
+            driver_module = importlib.import_module(cls.driver)
+            if Version(driver_module.__version__) < Version('2.0.908'):
+                cls.description_encoding = "use_encoding"
+            else:
+                cls.description_encoding = None
+            return driver_module
+        except ImportError:
+            raise ImportError(
+                'No module named redshift_connector. Please install '
+                'redshift_connector to use this sqlalchemy dialect.'
+            )
+    
+    def create_connect_args(self, *args, **kwargs):
+        default_args = {
+            'sslmode': 'verify-full',
+            'ssl': True,
+            'application_name': 'sqlalchemy-redshift'
+        }
+        cargs, cparams = super(RedshiftDialectMixin, self).create_connect_args(*args, **kwargs)
+        self.client_encoding = cparams.pop('client_encoding', self.client_encoding)
+        if 'port' in cparams:
+            cparams['port'] = int(cparams['port'])
+        if 'username' in cparams:
+            cparams['user'] = cparams['username']
+            del cparams['username']
         default_args.update(cparams)
         return cargs, default_args
 
