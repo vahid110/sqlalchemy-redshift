@@ -103,33 +103,44 @@ Create a complete SA 2.0 compatible `redshift+redshift_connector://` dialect tha
 
 ### ⏳ Phase 2: Connection & Pool Management (IN PROGRESS)
 
-**Cherry-picked from sqlalchemy2:**
-- 22 new test files
-- 4 modified test files (conftest.py, test_compiler.py, test_reflection.py, utils.py)
+**Commits:**
+- 93cfcfe: Add error handling and pool configuration
+- 1cb8eb2: Cherry-pick test files from sqlalchemy2 branch (UNTESTED)
+- d729cd4: Update test infrastructure files
 
-**Test Results:**
+**Implemented Features:**
+1. ✅ Pool configuration:
+   - `get_default_pool_size()` method (returns 5)
+   - `get_default_max_overflow()` method (returns 10)
+   
+2. ✅ Error handling:
+   - Created `resilience.py` module
+   - `ProductionErrorHandler` class with disconnect/transient error detection
+   - `CircuitBreaker` class for connection health monitoring
+   - `with_retry()` decorator for exponential backoff
+   - `error_handler` attribute on dialect
+
+3. ⏳ Connection health (inherited from parent, needs verification):
+   - `do_ping()` method
+   - `is_disconnect()` method
+
+**Test Status:**
 - tests/test_native_api.py: 5/5 passing ✅
 - tests/test_limit_offset_compilation.py: 3/3 passing ✅
-- tests/test_sqlalchemy2_compatibility.py: 3/6 passing ⚠️
-
-**Missing Features (from test failures):**
-1. Pool configuration:
-   - `get_default_pool_size()` method
-   - `get_default_max_overflow()` method
-   
-2. Error handling:
-   - `error_handler` attribute
-   - Enhanced disconnect detection
-
-3. Connection health:
-   - `do_ping()` method (may already exist from parent)
-   - `is_disconnect()` method (may already exist from parent)
+- tests/test_sqlalchemy2_compatibility.py: 6/6 passing ✅
+- **22 cherry-picked test files: NOT YET RUN** ⚠️
 
 **Next Steps:**
-1. Add pool configuration methods from sqlalchemy2
-2. Add error handler from sqlalchemy2
-3. Verify/enhance connection health methods
-4. Run full test suite to identify remaining gaps
+1. **RUN all cherry-picked tests to assess current state**
+2. Document pass/fail status for each test file
+3. **INVESTIGATE: Test coverage for legacy vs new implementation**
+   - Current tests use `RedshiftDialect_redshift_connector` (new native)
+   - Need to verify if legacy `RedshiftDialect_redshift_connector_legacy` needs separate tests
+   - Determine if backward compatibility tests are required
+   - Both entry points registered: `redshift.redshift_connector` (new) and `redshift.redshift_connector_legacy` (old)
+4. Identify missing features from test failures
+5. Implement missing features incrementally
+6. Verify connection health methods work correctly
 
 ---
 
