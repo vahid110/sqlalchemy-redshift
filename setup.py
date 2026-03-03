@@ -46,6 +46,7 @@ setup(
             'redshift.psycopg2 = sqlalchemy_redshift.dialect:RedshiftDialect_psycopg2',
             'redshift.psycopg2cffi = sqlalchemy_redshift.dialect:RedshiftDialect_psycopg2cffi',
             'redshift.redshift_connector = sqlalchemy_redshift.dialect:RedshiftDialect_redshift_connector',
+            'redshift.redshift_connector_legacy = sqlalchemy_redshift.dialect:RedshiftDialect_redshift_connector_legacy',
         ]
     },
 )
