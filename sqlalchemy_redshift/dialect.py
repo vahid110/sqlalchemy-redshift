@@ -1448,6 +1448,13 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     supports_sane_multi_rowcount = True
     use_setinputsizes = False
     
+    # SA 2.0 compatibility flags
+    insert_returning = False
+    use_insertmanyvalues = True
+    supports_sane_rowcount = False
+    supports_indexes = False
+    supports_empty_insert = False
+    
     def __init__(self, client_encoding=None, **kwargs):
         super().__init__(client_encoding=client_encoding, **kwargs)
         self.client_encoding = client_encoding
