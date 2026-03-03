@@ -1482,6 +1482,204 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             del cparams['username']
         default_args.update(cparams)
         return cargs, default_args
+    
+    @reflection.cache
+    def get_columns(self, connection, table_name, schema=None, **kw):
+        """Get columns using cursor.get_columns() native API with fallback."""
+        if hasattr(connection, 'connection'):
+            raw_conn = connection.connection
+        else:
+            raw_conn = connection
+        
+        try:
+            cursor = raw_conn.cursor()
+            schema = schema or 'public'
+            result = cursor.get_columns(catalog='', schema_pattern=schema, tablename_pattern=table_name)
+            
+            columns = []
+            for row in result:
+                col_name = row[3]  # COLUMN_NAME
+                type_name = row[5]  # TYPE_NAME
+                col_size = row[6]  # COLUMN_SIZE
+                nullable = row[10] == 1  # NULLABLE
+                col_default = row[12]  # COLUMN_DEF
+                
+                coltype = self.ischema_names.get(type_name.lower(), VARCHAR)
+                if col_size and coltype in (VARCHAR, CHAR):
+                    coltype = coltype(col_size)
+                
+                columns.append({
+                    'name': col_name,
+                    'type': coltype,
+                    'nullable': nullable,
+                    'default': col_default
+                })
+            
+            return columns
+        except Exception:
+            # Fallback to parent implementation using SQL
+            return super().get_columns(connection, table_name, schema, **kw)
+    
+    @reflection.cache
+    def get_pk_constraint(self, connection, table_name, schema=None, **kw):
+        """Get primary key using native API with SQL fallback."""
+        if hasattr(connection, 'connection'):
+            raw_conn = connection.connection
+        else:
+            raw_conn = connection
+        
+        try:
+            cursor = raw_conn.cursor()
+            schema = schema or 'public'
+            result = cursor.get_primary_keys(catalog='', schema=schema, table=table_name)
+            
+            pk_cols = []
+            pk_name = None
+            for row in result:
+                pk_cols.append(row[3])  # COLUMN_NAME
+                if not pk_name:
+                    pk_name = row[5]  # PK_NAME
+            
+            return {'constrained_columns': pk_cols, 'name': pk_name or ''}
+        except Exception:
+            # Fallback to SQL (show_discovery v4 required for native)
+            return super().get_pk_constraint(connection, table_name, schema, **kw)
+    
+    @reflection.cache
+    def get_foreign_keys(self, connection, table_name, schema=None, **kw):
+        """Get foreign keys using native API with SQL fallback."""
+        if hasattr(connection, 'connection'):
+            raw_conn = connection.connection
+        else:
+            raw_conn = connection
+        
+        try:
+            cursor = raw_conn.cursor()
+            schema = schema or 'public'
+            result = cursor.get_imported_keys(catalog='', schema=schema, table=table_name)
+            
+            fkeys = {}
+            for row in result:
+                fk_name = row[11]  # FK_NAME
+                if fk_name not in fkeys:
+                    fkeys[fk_name] = {
+                        'name': fk_name,
+                        'constrained_columns': [],
+                        'referred_schema': row[1],  # PKTABLE_SCHEM
+                        'referred_table': row[2],  # PKTABLE_NAME
+                        'referred_columns': []
+                    }
+                fkeys[fk_name]['constrained_columns'].append(row[7])  # FKCOLUMN_NAME
+                fkeys[fk_name]['referred_columns'].append(row[3])  # PKCOLUMN_NAME
+            
+            return list(fkeys.values())
+        except Exception:
+            # Fallback to SQL (show_discovery v4 required for native)
+            return super().get_foreign_keys(connection, table_name, schema, **kw)
+    
+    @reflection.cache
+    def get_table_names(self, connection, schema=None, **kw):
+        """Get table names using cursor.get_tables() native API."""
+        if hasattr(connection, 'connection'):
+            raw_conn = connection.connection
+        else:
+            raw_conn = connection
+        
+        cursor = raw_conn.cursor()
+        schema = schema or 'public'
+        result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['TABLE'])
+        
+        return [row[2] for row in result]  # TABLE_NAME
+    
+    @reflection.cache
+    def get_view_names(self, connection, schema=None, **kw):
+        """Get view names using cursor.get_tables() native API."""
+        if hasattr(connection, 'connection'):
+            raw_conn = connection.connection
+        else:
+            raw_conn = connection
+        
+        cursor = raw_conn.cursor()
+        schema = schema or 'public'
+        result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['VIEW'])
+        
+        return [row[2] for row in result]  # TABLE_NAME
+    
+    def get_indexes(self, connection, table_name, schema, **kw):
+        """Redshift doesn't support traditional indexes."""
+        return []
+    
+    @reflection.cache
+    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
+        """Redshift doesn't enforce unique constraints."""
+        return []
+    
+    def get_multi_columns(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for columns."""
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        names_to_check = filter_names or []
+        if not filter_names:
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema, **kw))
+            if kind is None or kind & ObjectKind.VIEW:
+                names_to_check.extend(self.get_view_names(connection, schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                columns = self.get_columns(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = columns
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_pk_constraint(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for primary keys."""
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        names_to_check = filter_names or []
+        if not filter_names:
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = pk
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_foreign_keys(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for foreign keys."""
+        from sqlalchemy.engine.reflection import ObjectKind
+        
+        result = {}
+        names_to_check = filter_names or []
+        if not filter_names:
+            if kind is None or kind & ObjectKind.TABLE:
+                names_to_check.extend(self.get_table_names(connection, schema, **kw))
+        
+        for table_name in names_to_check:
+            try:
+                fks = self.get_foreign_keys(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = fks
+            except Exception:
+                pass
+        
+        return result
+    
+    def get_multi_unique_constraints(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for unique constraints (Redshift doesn't enforce)."""
+        return {}
+    
+    def get_multi_indexes(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for indexes (Redshift doesn't support)."""
+        return {}
 
 
 def gen_columns_from_children(root):
