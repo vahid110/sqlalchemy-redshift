@@ -29,6 +29,7 @@ from .commands import (AlterTableAppendCommand, Compression, CopyCommand,
                        RefreshMaterializedView, UnloadFromSelect)
 from .ddl import (CreateMaterializedView, DropMaterializedView,
                   get_table_attributes)
+from .resilience import ProductionErrorHandler
 
 sa_version = Version(sa.__version__)
 logger = getLogger(__name__)
@@ -1458,6 +1459,8 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     def __init__(self, client_encoding=None, **kwargs):
         super().__init__(client_encoding=client_encoding, **kwargs)
         self.client_encoding = client_encoding
+        # Production-grade error handling
+        self.error_handler = ProductionErrorHandler()
     
     @classmethod
     def dbapi(cls):
@@ -1687,6 +1690,14 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     def get_multi_indexes(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for indexes (Redshift doesn't support)."""
         return {}
+    
+    def get_default_pool_size(self):
+        """Return default pool size optimized for Redshift."""
+        return 5
+    
+    def get_default_max_overflow(self):
+        """Return default max overflow optimized for Redshift."""
+        return 10
 
 
 def gen_columns_from_children(root):
