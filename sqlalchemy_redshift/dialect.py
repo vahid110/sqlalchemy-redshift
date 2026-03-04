@@ -1349,6 +1349,8 @@ class RedshiftDialect_psycopg2(
     Psycopg2RedshiftDialectMixin, PGDialect_psycopg2
 ):
     supports_statement_cache = False
+    insert_returning = False
+    supports_sane_rowcount = False
 
 
 # Add RedshiftDialect synonym for backwards compatibility.
@@ -1359,6 +1361,8 @@ class RedshiftDialect_psycopg2cffi(
     Psycopg2RedshiftDialectMixin, PGDialect_psycopg2cffi
 ):
     supports_statement_cache = False
+    insert_returning = False
+    supports_sane_rowcount = False
 
 
 class RedshiftDialect_redshift_connector_legacy(RedshiftDialectMixin, PGDialect):
