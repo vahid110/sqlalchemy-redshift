@@ -479,6 +479,7 @@ REDSHIFT_ISCHEMA_NAMES = {
     "hllsketch": HLLSKETCH,
     "abstime": ABSTIME,
     "interval": INTERVAL,
+    "json": JSON,
 }
 
 
