@@ -1698,6 +1698,38 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     def get_default_max_overflow(self):
         """Return default max overflow optimized for Redshift."""
         return 10
+    
+    def set_isolation_level(self, connection, level):
+        """Set isolation level. Redshift supports READ COMMITTED and AUTOCOMMIT."""
+        level = level.replace("_", " ")
+        
+        if hasattr(connection, "connection"):
+            connection = connection.connection
+        
+        if level == "AUTOCOMMIT":
+            connection.autocommit = True
+        elif level.upper() in ("READ COMMITTED", "READ_COMMITTED"):
+            connection.autocommit = False
+        else:
+            connection.autocommit = False
+    
+    def reset_isolation_level(self, dbapi_connection):
+        """Reset isolation level to default (READ COMMITTED)."""
+        if hasattr(dbapi_connection, "connection"):
+            dbapi_connection = dbapi_connection.connection
+        dbapi_connection.autocommit = False
+    
+    def _assert_and_set_isolation_level(self, dbapi_conn, level):
+        """Override to handle AUTOCOMMIT for SA 2.0."""
+        level = level.replace("_", " ").upper()
+        
+        if level == "AUTOCOMMIT":
+            self.set_isolation_level(dbapi_conn, "AUTOCOMMIT")
+        elif level in ("READ COMMITTED", "READ_COMMITTED"):
+            self.set_isolation_level(dbapi_conn, "READ COMMITTED")
+        else:
+            # Silently default to READ COMMITTED for unsupported levels
+            self.set_isolation_level(dbapi_conn, "READ COMMITTED")
 
 
 def gen_columns_from_children(root):
