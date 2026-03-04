@@ -1812,6 +1812,19 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
         """Return default max overflow optimized for Redshift."""
         return 10
     
+    def do_ping(self, dbapi_connection):
+        """Check if connection is alive."""
+        try:
+            cursor = dbapi_connection.cursor()
+            try:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+                return True
+            finally:
+                cursor.close()
+        except Exception:
+            return False
+    
     def set_isolation_level(self, connection, level):
         """Set isolation level. Redshift supports READ COMMITTED and AUTOCOMMIT."""
         level = level.replace("_", " ")
