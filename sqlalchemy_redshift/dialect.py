@@ -1373,6 +1373,19 @@ class RedshiftDialect_psycopg2(
     supports_statement_cache = False
     insert_returning = False
     supports_sane_rowcount = False
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        import warnings
+        warnings.warn(
+            "The psycopg2 dialect has limited SQLAlchemy 2.0 support due to "
+            "PostgreSQL dialect incompatibilities with Redshift. "
+            "Consider migrating to redshift_connector dialect: "
+            "'redshift+redshift_connector://...'. "
+            "See README for details.",
+            DeprecationWarning,
+            stacklevel=2
+        )
 
 
 # Add RedshiftDialect synonym for backwards compatibility.
@@ -1385,6 +1398,19 @@ class RedshiftDialect_psycopg2cffi(
     supports_statement_cache = False
     insert_returning = False
     supports_sane_rowcount = False
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        import warnings
+        warnings.warn(
+            "The psycopg2cffi dialect has limited SQLAlchemy 2.0 support due to "
+            "PostgreSQL dialect incompatibilities with Redshift. "
+            "Consider migrating to redshift_connector dialect: "
+            "'redshift+redshift_connector://...'. "
+            "See README for details.",
+            DeprecationWarning,
+            stacklevel=2
+        )
 
 
 class RedshiftDialect_redshift_connector_legacy(RedshiftDialectMixin, PGDialect):

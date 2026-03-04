@@ -25,9 +25,44 @@ The package is available on PyPI::
 
 Usage
 -----
+
+**Recommended: Use redshift_connector (native AWS driver)**
+
+For SQLAlchemy 2.0+, we strongly recommend using the ``redshift_connector`` driver::
+
+    >>> import sqlalchemy as sa
+    >>> sa.create_engine('redshift+redshift_connector://username:password@host.amazonaws.com:5439/database')
+    Engine(redshift+redshift_connector://username:password@host.amazonaws.com:5439/database)
+
+The ``redshift_connector`` dialect provides:
+
+* Full SQLAlchemy 2.0 compatibility
+* Native Redshift API support for reflection (get_tables, get_columns, etc.)
+* Better performance and reliability
+* Active maintenance by AWS
+
+**Legacy: psycopg2 dialects (limited SA 2.0 support)**
+
+The psycopg2-based dialects are maintained for backward compatibility but have limitations with SQLAlchemy 2.0::
+
+    >>> sa.create_engine('redshift+psycopg2://username@host.amazonaws.com:5439/database')
+    Engine(redshift+psycopg2://username@host.amazonaws.com:5439/database)
+
+.. warning::
+
+    The ``psycopg2`` and ``psycopg2cffi`` dialects inherit from PostgreSQL's dialect,
+    which queries system columns that don't exist in Redshift (based on PostgreSQL 8.0.2).
+    This causes reflection failures with SQLAlchemy 2.0+. 
+    
+    **We recommend migrating to redshift_connector for new projects.**
+
 The DSN format is similar to that of regular Postgres::
 
     >>> import sqlalchemy as sa
+    >>> # Recommended for SA 2.0+
+    >>> sa.create_engine('redshift+redshift_connector://username:password@host.amazonaws.com:5439/database')
+    Engine(redshift+redshift_connector://username:password@host.amazonaws.com:5439/database)
+    >>> # Legacy (limited SA 2.0 support)
     >>> sa.create_engine('redshift+psycopg2://username@host.amazonaws.com:5439/database')
     Engine(redshift+psycopg2://username@host.amazonaws.com:5439/database)
 

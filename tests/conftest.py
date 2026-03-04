@@ -211,7 +211,7 @@ def pytest_addoption(parser):
 
 
 class DriverParameterizedTests:
-    DEFAULT_DRIVERS = ['psycopg2', 'psycopg2cffi']
+    DEFAULT_DRIVERS = ['psycopg2', 'psycopg2cffi', 'redshift_connector']
     redshift_dialect_flavors = None
 
     @classmethod
