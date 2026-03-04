@@ -1343,6 +1343,28 @@ class Psycopg2RedshiftDialectMixin(RedshiftDialectMixin):
             raise ImportError(
                 'No module named {}'.format(cls.driver)
             )
+    
+    def set_isolation_level(self, connection, level):
+        """Set isolation level. Redshift supports READ COMMITTED and AUTOCOMMIT."""
+        level = level.replace("_", " ")
+        
+        if hasattr(connection, "connection"):
+            connection = connection.connection
+        
+        if level == "AUTOCOMMIT":
+            connection.autocommit = True
+        elif level.upper() in ("READ COMMITTED", "READ_COMMITTED"):
+            connection.autocommit = False
+        else:
+            raise sa.exc.ArgumentError(
+                f"Redshift only supports 'AUTOCOMMIT' and 'READ COMMITTED' isolation levels, got: {level}"
+            )
+    
+    def reset_isolation_level(self, dbapi_connection):
+        """Reset isolation level to default (READ COMMITTED)."""
+        if hasattr(dbapi_connection, "connection"):
+            dbapi_connection = dbapi_connection.connection
+        dbapi_connection.autocommit = False
 
 
 class RedshiftDialect_psycopg2(
