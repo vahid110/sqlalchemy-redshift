@@ -125,10 +125,34 @@ Create a complete SA 2.0 compatible `redshift+redshift_connector://` dialect tha
    - `is_disconnect()` method
 
 **Test Status:**
-- tests/test_native_api.py: 5/5 passing ✅
-- tests/test_limit_offset_compilation.py: 3/3 passing ✅
-- tests/test_sqlalchemy2_compatibility.py: 6/6 passing ✅
-- **22 cherry-picked test files: NOT YET RUN** ⚠️
+- test_native_api.py: 5/5 ✅
+- test_sqlalchemy2_compatibility.py: 6/6 ✅
+- test_limit_offset_compilation.py: 3/3 ✅
+- test_compiler.py: 61/61 ✅
+- test_statement_cache_sanity.py: 22/22 ✅
+- test_dialect_feature_compatibility.py: 19/19 ✅
+- test_legacy_type_compatibility.py: 15/15 ✅
+- test_dialect_types.py: 21/31 ⚠️ (10 failures - reflection inspection, needs cluster)
+
+**Unit Tests Summary: 131/131 passing, 21/31 partial**
+
+**Cluster-Required Tests (Not Yet Run):**
+- test_real_cluster_smoke.py
+- test_inspector_modernization.py
+- test_type_roundtrips.py
+- test_bulk_insert_validation.py
+- test_bulk_insertmanyvalues.py
+- test_error_handling.py
+- test_disconnect_simulation.py
+- test_isolation_levels.py
+- test_json_super_types.py
+- test_array_types.py
+- test_abstime_interval_types.py
+- test_copy_unload_autocommit.py
+- test_limit_offset_all_drivers.py
+- test_alembic_integration.py
+- test_authentication_system.py
+- test_reflection.py (modified)
 
 **Next Steps:**
 1. **RUN all cherry-picked tests to assess current state**
