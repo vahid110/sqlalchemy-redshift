@@ -73,6 +73,7 @@ __all__ = (
     'ABSTIME',
     'INTERVAL',
     'JSON',
+    'RedshiftArray',
 
     'RedshiftDialect', 'RedshiftDialect_psycopg2',
     'RedshiftDialect_psycopg2cffi', 'RedshiftDialect_redshift_connector',
@@ -467,6 +468,43 @@ class JSON(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
                     logger.warning(f"Failed to parse JSON value: {e}")
                     return value
             return value
+        return process
+
+
+class RedshiftArray(sa.types.ARRAY):
+    """Redshift array type with performance optimizations"""
+    
+    def __init__(self, item_type, as_tuple=False, dimensions=None, zero_indexes=False):
+        super(RedshiftArray, self).__init__(item_type, as_tuple, dimensions, zero_indexes)
+    
+    def bind_processor(self, dialect):
+        """Process Python values for database binding"""
+        item_proc = self.item_type.dialect_impl(dialect).bind_processor(dialect)
+        
+        def process(value):
+            if value is None:
+                return None
+            if not isinstance(value, (list, tuple)):
+                return value
+            if not item_proc:
+                return list(value)
+            return [item_proc(item) for item in value]
+        
+        return process
+    
+    def result_processor(self, dialect, coltype):
+        """Process database values for Python use"""
+        item_proc = self.item_type.dialect_impl(dialect).result_processor(dialect, coltype)
+        
+        def process(value):
+            if value is None:
+                return None
+            if not isinstance(value, (list, tuple)):
+                return value
+            if not item_proc:
+                return list(value)
+            return [item_proc(item) for item in value]
+        
         return process
 
 
