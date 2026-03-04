@@ -136,7 +136,14 @@ Create a complete SA 2.0 compatible `redshift+redshift_connector://` dialect tha
 
 **Unit Tests Summary: 131/131 passing, 21/31 partial**
 
-**Cluster-Required Tests (Not Yet Run):**
+**Cluster Test Results:**
+- test_real_cluster_smoke.py: 8/12 ⚠️ (4 failures - AUTOCOMMIT isolation level)
+- test_reflection.py (redshift_connector): 5/5 ✅
+
+**Issues Found:**
+1. AUTOCOMMIT isolation level not supported in SA 2.0 - needs set_isolation_level() override
+2. Missing types for Phase 3: JSON, INTERVAL, ABSTIME, Array types
+3. Tests requiring Phase 3 types: test_type_roundtrips.py, test_bulk_insert_validation.py, test_json_super_types.py, test_array_types.py, test_abstime_interval_types.py
 - test_real_cluster_smoke.py
 - test_inspector_modernization.py
 - test_type_roundtrips.py
