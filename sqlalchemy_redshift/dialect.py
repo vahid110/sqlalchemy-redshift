@@ -70,6 +70,9 @@ __all__ = (
     'TIMESTAMPTZ',
     'TIMETZ',
     'HLLSKETCH',
+    'ABSTIME',
+    'INTERVAL',
+    'JSON',
 
     'RedshiftDialect', 'RedshiftDialect_psycopg2',
     'RedshiftDialect_psycopg2cffi', 'RedshiftDialect_redshift_connector',
@@ -411,6 +414,62 @@ class HLLSKETCH(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
         return dbapi.HLLSKETCH
 
 
+class ABSTIME(RedshiftTypeEngine, sa.dialects.postgresql.TIMESTAMP):
+    """Redshift ABSTIME data type for absolute time"""
+    __visit_name__ = 'ABSTIME'
+
+    def __init__(self):
+        super(ABSTIME, self).__init__()
+
+
+class INTERVAL(RedshiftTypeEngine, sa.dialects.postgresql.INTERVAL):
+    """Redshift INTERVAL data type"""
+    __visit_name__ = 'INTERVAL'
+
+    def __init__(self):
+        super(INTERVAL, self).__init__()
+
+
+class JSON(RedshiftTypeEngine, sa.dialects.postgresql.TEXT):
+    """JSON type that maps to SUPER in Redshift"""
+    __visit_name__ = 'JSON'
+    
+    def __init__(self):
+        super(JSON, self).__init__()
+        self._cache = {}
+    
+    def bind_processor(self, dialect):
+        """Convert Python dict/list to JSON string"""
+        def process(value):
+            if value is None:
+                return None
+            if isinstance(value, (dict, list)) and len(str(value)) < 100:
+                cache_key = str(value)
+                if cache_key not in self._cache:
+                    self._cache[cache_key] = json.dumps(value)
+                return self._cache[cache_key]
+            return json.dumps(value)
+        return process
+    
+    def result_processor(self, dialect, coltype):
+        """Convert JSON string to Python dict/list"""
+        def process(value):
+            if value is None:
+                return None
+            if isinstance(value, str):
+                try:
+                    if len(value) < 100:
+                        if value not in self._cache:
+                            self._cache[value] = json.loads(value)
+                        return self._cache[value]
+                    return json.loads(value)
+                except (json.JSONDecodeError, TypeError) as e:
+                    logger.warning(f"Failed to parse JSON value: {e}")
+                    return value
+            return value
+        return process
+
+
 # Mapping for database schema inspection of Amazon Redshift datatypes
 REDSHIFT_ISCHEMA_NAMES = {
     "geometry": GEOMETRY,
@@ -418,6 +477,8 @@ REDSHIFT_ISCHEMA_NAMES = {
     "time with time zone": TIMETZ,
     "timestamp with time zone": TIMESTAMPTZ,
     "hllsketch": HLLSKETCH,
+    "abstime": ABSTIME,
+    "interval": INTERVAL,
 }
 
 
@@ -650,6 +711,15 @@ class RedshiftTypeCompiler(PGTypeCompiler):
 
     def visit_HLLSKETCH(self, type_, **kw):
         return "HLLSKETCH"
+    
+    def visit_ABSTIME(self, type_, **kw):
+        return "ABSTIME"
+    
+    def visit_INTERVAL(self, type_, **kw):
+        return "INTERVAL"
+    
+    def visit_JSON(self, type_, **kw):
+        return "SUPER"
 
 
 class RedshiftIdentifierPreparer(PGIdentifierPreparer):
