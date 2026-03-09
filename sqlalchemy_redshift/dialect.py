@@ -930,7 +930,7 @@ class RedshiftDialectMixin(DefaultDialect):
                                                      schema, **kw)
         pk_constraints = [c for c in constraints if c.contype == 'p']
         if not pk_constraints:
-            return {'constrained_columns': [], 'name': ''}
+            return {'constrained_columns': [], 'name': None}
         pk_constraint = pk_constraints[0]
         m = PRIMARY_KEY_RE.match(pk_constraint.condef)
         colstring = m.group('columns')
@@ -1159,16 +1159,29 @@ class RedshiftDialectMixin(DefaultDialect):
     @reflection.cache
     def _get_all_relation_info(self, connection, **kw):
         schema = kw.get('schema', None)
-        schema_clause = (
-            "AND schema = '{schema}'".format(schema=schema) if schema else ""
-        )
-
         table_name = kw.get('table_name', None)
-        table_clause = (
-            "AND relname = '{table}'".format(
-                table=table_name
-            ) if table_name else ""
-        )
+        
+        # Build WHERE clauses with proper parameterization
+        where_clauses = ["c.relkind IN ('r', 'v', 'm', 'S', 'f')", "n.nspname !~ '^pg_'"]
+        params = {}
+        
+        if schema:
+            where_clauses.append("schema = :schema")
+            params['schema'] = schema
+        
+        if table_name:
+            where_clauses.append("relname = :table_name")
+            params['table_name'] = table_name
+        
+        where_clause = " AND ".join(where_clauses)
+        
+        # Build external table WHERE clause
+        ext_where_clauses = ["1"]
+        if schema:
+            ext_where_clauses.append("schema = :schema")
+        if table_name:
+            ext_where_clauses.append("relname = :table_name")
+        ext_where_clause = " AND ".join(ext_where_clauses)
 
         result = connection.execute(sa.text("""
         SELECT
@@ -1188,8 +1201,7 @@ class RedshiftDialectMixin(DefaultDialect):
         FROM pg_catalog.pg_class c
              LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
              JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner
-        WHERE c.relkind IN ('r', 'v', 'm', 'S', 'f')
-          AND n.nspname !~ '^pg_' {schema_clause} {table_clause}
+        WHERE """ + where_clause + """
         UNION
         SELECT
             'r' AS "relkind",
@@ -1206,9 +1218,9 @@ class RedshiftDialectMixin(DefaultDialect):
             svv_external_tables t
             JOIN svv_external_schemas s ON s.schemaname = t.schemaname
             JOIN pg_catalog.pg_user u ON u.usesysid = s.esowner
-        where 1 {schema_clause} {table_clause}
+        WHERE """ + ext_where_clause + """
         ORDER BY "relkind", "schema_oid", "schema";
-        """.format(schema_clause=schema_clause, table_clause=table_clause)))
+        """), params)
         relations = {}
         for rel in result:
             key = RelationKey(rel.relname, rel.schema, connection)
@@ -1711,7 +1723,7 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
                 if not pk_name:
                     pk_name = row[5]  # PK_NAME
             
-            return {'constrained_columns': pk_cols, 'name': pk_name or ''}
+            return {'constrained_columns': pk_cols, 'name': pk_name}
         except Exception:
             # Fallback to SQL (show_discovery v4 required for native)
             return super().get_pk_constraint(connection, table_name, schema, **kw)
@@ -1757,24 +1769,31 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             raw_conn = connection
         
         cursor = raw_conn.cursor()
-        schema = schema or 'public'
+        # redshift_connector has bugs with schema_pattern=None, always use explicit schema
+        if schema is None:
+            schema = inspect(connection).default_schema_name or 'public'
         result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['TABLE'])
         
         return [row[2] for row in result]  # TABLE_NAME
     
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
-        """Get view names using cursor.get_tables() native API."""
+        """Get view names using cursor.get_tables() native API with SQL fallback."""
         if hasattr(connection, 'connection'):
             raw_conn = connection.connection
         else:
             raw_conn = connection
         
-        cursor = raw_conn.cursor()
-        schema = schema or 'public'
-        result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['VIEW'])
-        
-        return [row[2] for row in result]  # TABLE_NAME
+        try:
+            cursor = raw_conn.cursor()
+            # redshift_connector has bugs with schema_pattern=None, always use explicit schema
+            if schema is None:
+                schema = inspect(connection).default_schema_name or 'public'
+            result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['VIEW'])
+            return [row[2] for row in result]  # TABLE_NAME
+        except (IndexError, Exception):
+            # Fallback to SQL-based reflection (redshift_connector bug with empty VIEW results)
+            return super().get_view_names(connection, schema, **kw)
     
     def get_indexes(self, connection, table_name, schema, **kw):
         """Redshift doesn't support traditional indexes."""
@@ -1787,17 +1806,32 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     
     def get_multi_columns(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for columns."""
-        from sqlalchemy.engine.reflection import ObjectKind
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            if schema and schema.startswith('pg_temp'):
+                return {}
         
         result = {}
-        names_to_check = filter_names or []
-        if not filter_names:
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema, **kw))
-            if kind is None or kind & ObjectKind.VIEW:
-                names_to_check.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Get actual table/view names that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self.get_table_names(connection, schema, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else actual_names
         
         for table_name in names_to_check:
+            # Only process if table actually exists
+            if table_name not in actual_names:
+                continue
             try:
                 columns = self.get_columns(connection, table_name, schema=schema, **kw)
                 result[(schema, table_name)] = columns
@@ -1808,15 +1842,32 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     
     def get_multi_pk_constraint(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for primary keys."""
-        from sqlalchemy.engine.reflection import ObjectKind
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            if schema and schema.startswith('pg_temp'):
+                return {}
         
         result = {}
-        names_to_check = filter_names or []
-        if not filter_names:
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema, **kw))
+        
+        # Get actual table/view names that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self.get_table_names(connection, schema, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else actual_names
         
         for table_name in names_to_check:
+            # Only process if table/view actually exists
+            if table_name not in actual_names:
+                continue
             try:
                 pk = self.get_pk_constraint(connection, table_name, schema=schema, **kw)
                 result[(schema, table_name)] = pk
@@ -1827,15 +1878,32 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     
     def get_multi_foreign_keys(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for foreign keys."""
-        from sqlalchemy.engine.reflection import ObjectKind
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            if schema and schema.startswith('pg_temp'):
+                return {}
         
         result = {}
-        names_to_check = filter_names or []
-        if not filter_names:
-            if kind is None or kind & ObjectKind.TABLE:
-                names_to_check.extend(self.get_table_names(connection, schema, **kw))
+        
+        # Get actual table/view names that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self.get_table_names(connection, schema, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else actual_names
         
         for table_name in names_to_check:
+            # Only process if table/view actually exists
+            if table_name not in actual_names:
+                continue
             try:
                 fks = self.get_foreign_keys(connection, table_name, schema=schema, **kw)
                 result[(schema, table_name)] = fks
@@ -1846,11 +1914,113 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     
     def get_multi_unique_constraints(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for unique constraints (Redshift doesn't enforce)."""
-        return {}
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            if schema and schema.startswith('pg_temp'):
+                return {}
+        
+        result = {}
+        
+        # Get actual table/view names that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self.get_table_names(connection, schema, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else actual_names
+        
+        for table_name in names_to_check:
+            # Only process if table/view actually exists
+            if table_name not in actual_names:
+                continue
+            try:
+                constraints = self.get_unique_constraints(connection, table_name, schema=schema, **kw)
+                result[(schema, table_name)] = constraints
+            except Exception:
+                pass
+        
+        return result
     
     def get_multi_indexes(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
         """SA 2.0 multi-reflection for indexes (Redshift doesn't support)."""
-        return {}
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            if schema and schema.startswith('pg_temp'):
+                return {}
+        
+        result = {}
+        
+        # Get actual table/view names that exist
+        actual_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            actual_names.extend(self.get_table_names(connection, schema, **kw))
+        if kind is None or kind & ObjectKind.VIEW:
+            actual_names.extend(self.get_view_names(connection, schema, **kw))
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else actual_names
+        
+        # Redshift doesn't support indexes, return empty list for existing tables/views only
+        for table_name in names_to_check:
+            if table_name in actual_names:
+                result[(schema, table_name)] = []
+        
+        return result
+    
+    def get_multi_table_options(self, connection, schema=None, filter_names=None, kind=None, scope=None, **kw):
+        """SA 2.0 multi-reflection for table options."""
+        from sqlalchemy.engine.reflection import ObjectKind, ObjectScope
+        
+        # Handle scope filtering
+        if scope is ObjectScope.TEMPORARY:
+            # Only return results if querying a temp schema
+            if not schema or not schema.startswith('pg_temp'):
+                return {}
+        elif scope is ObjectScope.DEFAULT:
+            # Skip temp schemas for default scope
+            if schema and schema.startswith('pg_temp'):
+                return {}
+        
+        result = {}
+        
+        # Get actual table names
+        table_names = []
+        if kind is None or kind & ObjectKind.TABLE:
+            table_names = self.get_table_names(connection, schema, **kw)
+        
+        # Get actual view names (views don't have table options, return empty dict)
+        view_names = []
+        if kind is None or kind & ObjectKind.VIEW:
+            view_names = self.get_view_names(connection, schema, **kw)
+        
+        # Determine which names to query
+        names_to_check = filter_names if filter_names else (table_names + view_names)
+        
+        for table_name in names_to_check:
+            # For views, return empty dict (no table options)
+            if table_name in view_names:
+                result[(schema, table_name)] = {}
+            # For tables, query actual options
+            elif table_name in table_names:
+                try:
+                    opts = self.get_table_options(connection, table_name, schema=schema, **kw)
+                    result[(schema, table_name)] = opts
+                except Exception:
+                    pass
+        
+        return result
     
     def get_default_pool_size(self):
         """Return default pool size optimized for Redshift."""
