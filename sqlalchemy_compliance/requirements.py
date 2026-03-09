@@ -13,7 +13,14 @@ class Requirements(SuiteRequirements):
     
     @property
     def returning(self):
-        """Redshift doesn't support RETURNING clause"""
+        """Redshift doesn't support RETURNING clause.
+        
+        Note: SQLAlchemy respects the insert_returning/update_returning/delete_returning
+        flags and strips RETURNING clauses before compilation, so statements with
+        .returning() never reach the database. The ReturningGuardsTest expects a
+        DBAPIError from the database, but SQLAlchemy prevents the invalid SQL from
+        being sent, so these tests cannot pass as written.
+        """
         return exclusions.closed()
     
     @property
