@@ -1,0 +1,3 @@
+sqlalchemy-redshift
+redshift_connector
+SQLAlchemy>=1.4,<2.1
