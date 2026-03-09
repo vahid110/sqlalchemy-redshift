@@ -956,12 +956,16 @@ class RedshiftDialectMixin(DefaultDialect):
             uniques[con.conname]["key"] = con.conkey
             uniques[con.conname]["condef"] = con.condef
         fkeys = []
+        default_schema = inspect(connection).default_schema_name
         for conname, attrs in uniques.items():
             m = FOREIGN_KEY_RE.match(attrs['condef'])
             colstring = m.group('referred_columns')
             referred_columns = SQL_IDENTIFIER_RE.findall(colstring)
             referred_table = m.group('referred_table')
             referred_schema = m.group('referred_schema')
+            # Return None for default schema instead of 'public'
+            if referred_schema == default_schema:
+                referred_schema = None
             colstring = m.group('columns')
             constrained_columns = SQL_IDENTIFIER_RE.findall(colstring)
             fkey_d = {
@@ -1004,7 +1008,7 @@ class RedshiftDialectMixin(DefaultDialect):
         :meth:`~sqlalchemy.engine.interfaces.Dialect.get_view_definition`.
         """
         view = self._get_redshift_relation(connection, view_name, schema, **kw)
-        return sa.text(view.view_definition)
+        return view.view_definition
 
     def get_indexes(self, connection, table_name, schema, **kw):
         """
@@ -1023,23 +1027,14 @@ class RedshiftDialectMixin(DefaultDialect):
                                schema=None, **kw):
         """
         Return information about unique constraints in `table_name`.
+        
+        Redshift doesn't enforce unique constraints, so return empty list.
 
         Overrides interface
         :meth:`~sqlalchemy.engine.interfaces.Dialect.get_unique_constraints`.
         """
-        constraints = self._get_redshift_constraints(connection,
-                                                     table_name, schema, **kw)
-        constraints = [c for c in constraints if c.contype == 'u']
-        uniques = defaultdict(lambda: defaultdict(dict))
-        for con in constraints:
-            uniques[con.conname]["key"] = con.conkey
-            uniques[con.conname]["cols"][con.attnum] = con.attname
-
-        return [
-            {'name': name,
-             'column_names': [uc["cols"][i] for i in uc["key"]]}
-            for name, uc in uniques.items()
-        ]
+        # Redshift doesn't enforce unique constraints
+        return []
 
     @reflection.cache
     def get_table_options(self, connection, table_name, schema, **kw):
@@ -1624,6 +1619,11 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
     
     # SA 2.0 compatibility flags
     insert_returning = False
+    update_returning = False
+    delete_returning = False
+    insert_executemany_returning = False
+    update_executemany_returning = False
+    delete_executemany_returning = False
     use_insertmanyvalues = True
     supports_sane_rowcount = False
     supports_indexes = False
@@ -1741,15 +1741,23 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             schema = schema or 'public'
             result = cursor.get_imported_keys(catalog='', schema=schema, table=table_name)
             
+            default_schema = inspect(connection).default_schema_name
             fkeys = {}
             for row in result:
                 fk_name = row[11]  # FK_NAME
                 if fk_name not in fkeys:
+                    referred_schema = row[1]  # PKTABLE_SCHEM
+                    referred_table = row[2]  # PKTABLE_NAME
+                    # Unescape %% to % (redshift_connector bug)
+                    referred_table = referred_table.replace('%%', '%')
+                    # Return None for default schema
+                    if referred_schema == default_schema:
+                        referred_schema = None
                     fkeys[fk_name] = {
                         'name': fk_name,
                         'constrained_columns': [],
-                        'referred_schema': row[1],  # PKTABLE_SCHEM
-                        'referred_table': row[2],  # PKTABLE_NAME
+                        'referred_schema': referred_schema,
+                        'referred_table': referred_table,
                         'referred_columns': []
                     }
                 fkeys[fk_name]['constrained_columns'].append(row[7])  # FKCOLUMN_NAME
@@ -1774,7 +1782,8 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             schema = inspect(connection).default_schema_name or 'public'
         result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['TABLE'])
         
-        return [row[2] for row in result]  # TABLE_NAME
+        # Unescape %% to % (redshift_connector bug)
+        return [row[2].replace('%%', '%') for row in result]  # TABLE_NAME
     
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
@@ -1790,7 +1799,8 @@ class RedshiftDialect_redshift_connector(RedshiftDialectMixin, PGDialect):
             if schema is None:
                 schema = inspect(connection).default_schema_name or 'public'
             result = cursor.get_tables(catalog='', schema_pattern=schema, table_name_pattern='%', types=['VIEW'])
-            return [row[2] for row in result]  # TABLE_NAME
+            # Unescape %% to % (redshift_connector bug)
+            return [row[2].replace('%%', '%') for row in result]  # TABLE_NAME
         except (IndexError, Exception):
             # Fallback to SQL-based reflection (redshift_connector bug with empty VIEW results)
             return super().get_view_names(connection, schema, **kw)
@@ -2185,7 +2195,16 @@ def visit_delete_stmt(element, compiler, **kwargs):
                 clause=', '.join(usingclause_tables)
             )
 
-    return 'DELETE FROM {table}{using}{where}'.format(
+    # Handle RETURNING clause if present (will be rejected by Redshift)
+    returning_clause = ''
+    if sa_version >= Version('1.4.0'):
+        if element._returning:
+            returning_clause = ' RETURNING ' + ', '.join(
+                compiler.process(col, **kwargs) for col in element._returning
+            )
+
+    return 'DELETE FROM {table}{using}{where}{returning}'.format(
         table=delete_stmt_table,
         using=usingclause,
-        where=whereclause)
+        where=whereclause,
+        returning=returning_clause)
